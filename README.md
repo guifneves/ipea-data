@@ -1,2 +1,2 @@
-# airzflow_template
-Repositório template para criação de projetos para o Airflow da equipe de Analytics Raizen
+# Projeto IPEA Data
+Repository for Airflow's DAGs responsible to collect all Time Series of IPEA Data Website
