@@ -1,4 +1,4 @@
-FROM rzldt.azurecr.io/airzflow:latest
+FROM airzflow:latest
 
 RUN pip install --user apache-airflow[hive,jdbc]
 

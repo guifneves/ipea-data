@@ -20,7 +20,7 @@ services:
     container_name: postgres
 
   webserver:
-    image: rzldt.azurecr.io/airzflow:latest
+    image: airflow_webserver:latest
     environment:
       - POSTGRES_HOST
       - POSTGRES_PORT
@@ -40,10 +40,11 @@ services:
     restart: unless-stopped
     volumes:
       - ./dags:/home/engineer/dags:z
+      - ./logs:/home/engineer/logs:z
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      
+
   scheduler:
-    image: rzldt.azurecr.io/airzflow:latest
+    image: airflow_webserver:latest
     environment:
       - POSTGRES_HOST
       - POSTGRES_PORT
@@ -61,10 +62,11 @@ services:
     restart: unless-stopped
     volumes:
       - ./dags:/home/engineer/dags:z
+      - ./logs:/home/engineer/logs:z
       - /var/run/docker.sock:/var/run/docker.sock:ro
-  
+
   worker:
-    image: rzldt.azurecr.io/airzflow:latest
+    image: airflow_webserver:latest
     environment:
       - POSTGRES_HOST
       - POSTGRES_PORT
@@ -83,11 +85,10 @@ services:
     restart: unless-stopped
     volumes:
       - ./dags:/home/engineer/dags:z
-      - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./logs:/home/engineer/logs:z
-
+      - /var/run/docker.sock:/var/run/docker.sock:ro
   flower:
-    image: rzldt.azurecr.io/airzflow:latest
+    image: airflow_webserver:latest
     environment:
       - POSTGRES_HOST
       - POSTGRES_PORT
@@ -104,5 +105,3 @@ services:
     restart: unless-stopped
     ports:
       - "127.0.0.1:8082:5555"
-
-
