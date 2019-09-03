@@ -129,3 +129,4 @@ airflow.cfg
 docker-compose-dev.yml
 entrypoint.sh
 data/
+logs/
