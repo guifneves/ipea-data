@@ -61,7 +61,14 @@ save_metadata = PythonOperator(
 )
 
 def fn_get_timeseries(**args):
-    print("TODO")
+    import pyspark.sql.functions as F
+    import pyIpeaData as ipea
+
+    current_date = datetime.now().strftime("%Y-%m-%d")
+    spark = adl.get_adl_spark(args["save_path"])
+    df_md = spark.read.format("parquet").load(args["source_path"]).filter(F.col("ref_date") == current_date)
+    
+
 
 get_timeseries = PythonOperator(
     task_id = "get_timeseries",
