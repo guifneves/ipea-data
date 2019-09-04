@@ -53,7 +53,7 @@ save_metadata = PythonOperator(
     task_id = "save_metadata",
     python_callable = fn_save_metadata,
     op_kwargs = {
-        'source_path': adl.adl_full_url(ADL, workdir + '/ipeadata/raw/metadados')
+        'source_path': adl.adl_full_url(ADL, workdir + '/ipeadata/raw/metadados'),
         'table_name': 'ipeadata_metadados'
     },
     queue = worker_queue,
