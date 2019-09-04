@@ -68,8 +68,21 @@ def fn_get_timeseries(**args):
     current_date = datetime.now().strftime("%Y-%m-%d")
     spark = adl.get_adl_spark(args["save_path"])
     df_md = spark.read.format("parquet").load(args["source_path"]).filter(F.col("ref_date") == current_date)
+    #codes = list(map(lambda i: i.SERCODIGO, df_md.select("SERCODIGO").distinct().collect()))
 
+    count = 0
 
+    for code in codes:
+        df_pd = ipea.get_serie(code)
+        df = spark.createDataFrame(df_pd)
+        df = df.withColumn("ref_date", F.lit(datetime.now().strftime("%Y-%m-%d")))
+        count += df.count()
+        df.coalesce(1).write \
+            .partitionBy("ref_date") \
+            .format("parquet") \
+            .save(args["save_path"] + "/" + code)
+
+    print("*" * 80, count)
 
 get_timeseries = PythonOperator(
     task_id = "get_timeseries",
