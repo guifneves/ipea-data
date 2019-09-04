@@ -25,7 +25,7 @@ services:
       - REDIS_PORT
       - REDIS_PASSWORD
       - FERNET_KEY
-      - REMOTE_BASE_LOG_FOLDER
+      - REMOTE_BASE_LOG_FOLDER=./logs/
       - ENVIRONMENT=dev
       - MEMCACHED=True
     networks:
@@ -40,4 +40,4 @@ services:
 networks:
   my-network:
       external:
-          name: airzflow_default #(1)
+          name: ipeadata_default #(1)

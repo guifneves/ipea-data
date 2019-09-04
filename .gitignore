@@ -126,6 +126,8 @@ dmypy.json
 
 # dev composer
 airflow.cfg
+
+**/logs/**
 docker-compose-dev.yml
 entrypoint.sh
 data/
