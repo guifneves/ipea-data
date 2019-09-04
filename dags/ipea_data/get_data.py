@@ -49,7 +49,16 @@ get_metadata = PythonOperator(
 def fn_save_metadata(**args):
     print("TODO")
 
-save_metadata = DummyOperator(task_id = "save_metadata", dag = dag)
+save_metadata = PythonOperator(
+    task_id = "save_metadata",
+    python_callable = fn_save_metadata,
+    op_kwargs = {
+        'source_path': adl.adl_full_url(ADL, workdir + '/ipeadata/raw/metadados')
+        'table_name': 'ipeadata_metadados'
+    },
+    queue = worker_queue,
+    dag = dag
+)
 
 def fn_get_timeseries(**args):
     print("TODO")
@@ -66,7 +75,19 @@ get_timeseries = PythonOperator(
     dag = dag
 )
 
-save_timeseries = DummyOperator(task_id = "save_timeseries", dag = dag)
+def fn_save_timeseries(**args):
+    print("TODO")
+
+save_timeseries = PythonOperator(
+    task_id = "save_timeseries",
+    python_callable = fn_save_timeseries,
+    op_kwargs = {
+        'source_path': adl.adl_full_url(ADL, workdir + '/ipeadata/dados/'),
+        'table_name': 'ipeadata_metadados'
+    },
+    queue = worker_queue,
+    dag = dag
+)
 
 get_metadata >> [save_metadata, get_timeseries]
 get_timeseries >> save_timeseries
