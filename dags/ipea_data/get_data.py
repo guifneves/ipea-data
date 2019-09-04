@@ -8,7 +8,7 @@ import raizenlib.utils.adl as adl
 
 ADL = 'raizenprd01'
 dag_id = 'PID-retrieve_ipea_data'
-workdir = 'ldt_dev/projetos/'
+workdir = 'ldt_dev/sandbox/'
 worker_queue = "ipea-data-worker-queue"
 
 default_args = {
@@ -29,6 +29,7 @@ def fn_get_metadata(**args):
     df_pd = ipea.get_metadados()
     df = spark.createDataFrame(df_pd)
     df = df.withColumn("ref_date", F.lit(datetime.now().strftime("%Y-%m-%d")))
+    print("*" * 80, args["save_path"])
     df.coalesce(1).write \
         .partitionBy("ref_date") \
         .format("parquet") \
@@ -39,7 +40,7 @@ get_metadata = PythonOperator(
     task_id = "get_metadata",
     python_callable = fn_get_metadata,
     op_kwargs = {
-        'save_path': adl.adl_full_url(ADL, workdir + '/ipeadata/raw/metadados'),
+        'save_path': adl.adl_full_url(ADL, workdir + '/ipea_data/raw/metadados'),
         'table_name': 'ipeadata_metadados'
     },
     queue = worker_queue,
@@ -53,7 +54,7 @@ save_metadata = PythonOperator(
     task_id = "save_metadata",
     python_callable = fn_save_metadata,
     op_kwargs = {
-        'source_path': adl.adl_full_url(ADL, workdir + '/ipeadata/raw/metadados'),
+        'source_path': adl.adl_full_url(ADL, workdir + '/ipea_data/raw/metadados'),
         'table_name': 'ipeadata_metadados'
     },
     queue = worker_queue,
@@ -67,15 +68,15 @@ def fn_get_timeseries(**args):
     current_date = datetime.now().strftime("%Y-%m-%d")
     spark = adl.get_adl_spark(args["save_path"])
     df_md = spark.read.format("parquet").load(args["source_path"]).filter(F.col("ref_date") == current_date)
-    
+
 
 
 get_timeseries = PythonOperator(
     task_id = "get_timeseries",
     python_callable = fn_get_timeseries,
     op_kwargs = {
-        'source_path': adl.adl_full_url(ADL, workdir + '/ipeadata/raw/metadados'),
-        'save_path': adl.adl_full_url(ADL, workdir + '/ipeadata/dados/'),
+        'source_path': adl.adl_full_url(ADL, workdir + '/ipea_data/raw/metadados'),
+        'save_path': adl.adl_full_url(ADL, workdir + '/ipea_data/dados/'),
         'table_name': 'ipeadata_metadados'
     },
     queue = worker_queue,
@@ -89,7 +90,7 @@ save_timeseries = PythonOperator(
     task_id = "save_timeseries",
     python_callable = fn_save_timeseries,
     op_kwargs = {
-        'source_path': adl.adl_full_url(ADL, workdir + '/ipeadata/dados/'),
+        'source_path': adl.adl_full_url(ADL, workdir + '/ipea_data/dados/'),
         'table_name': 'ipeadata_metadados'
     },
     queue = worker_queue,
