@@ -24,7 +24,7 @@ def save_metadata(**args):
     conn_properties = {}
 
     current_date = datetime.now().strftime("%Y-%m-%d")
-    spark = adl.get_adl_spark(args["save_path"])
+    spark = adl.get_adl_spark(args["source_path"])
     df = spark.read.format("parquet").load(args["source_path"]).filter(F.col("ref_date") == current_date)
     df.show()
     #if df.count() > 0:
@@ -62,7 +62,7 @@ def save_timeseries(**args):
     conn_properties = {}
 
     current_date = datetime.now().strftime("%Y-%m-%d")
-    spark = adl.get_adl_spark(args["save_path"])
+    spark = adl.get_adl_spark(args["source_path"])
     df = spark.read.format("parquet").load(args["source_path"]).filter(F.col("ref_date") == current_date)
     df.show()
     #if df.count() > 0:
