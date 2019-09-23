@@ -55,20 +55,6 @@ RUN pip install pyspark==2.3.1
 RUN pip install findspark
 RUN pip install pyarrow
 
-#memcached
-RUN wget https://www.memcached.org/files/memcached-1.5.13.tar.gz
-RUN ls -lah
-RUN tar -zxvf memcached-1.5.13.tar.gz
-RUN ls -lah
-
-WORKDIR memcached-1.5.13
-RUN ls -lah
-RUN ./configure && make && make test && make install
-
-RUN pip install pymemcache
-
-WORKDIR /home/engineer/
-
 USER engineer
 WORKDIR /home/engineer/
 
