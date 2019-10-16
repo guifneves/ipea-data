@@ -1,12 +1,11 @@
 import airflow
 from airflow import DAG
-from datetime import datetime, timedelta
+from datetime import datetime
 from airflow.operators.python_operator import PythonOperator
 from airflow.operators.dummy_operator import DummyOperator
 
 import raizenlib.utils.adl as adl
-import ipea_data.tasks.extract as extract
-import ipea_data.tasks.persist as persist
+import ipea_data.tasks.ingest as ingest
 
 ADL = 'raizenprd01'
 dag_id = 'PID-retrieve_ipea_data'
@@ -24,13 +23,11 @@ default_args = {
 
 dag = DAG(dag_id, catchup=False, default_args=default_args, schedule_interval="@daily", max_active_runs=1)
 
-
 get_metadata = PythonOperator(
     task_id = "get_metadata",
-    python_callable = extract.fn_get_metadata,
+    python_callable = ingest.get_metadata,
     op_kwargs = {
-        'save_path': adl.adl_full_url(ADL, workdir + '/ipea_data/raw_igor/metadados'),
-        'table_name': 'ipeadata_metadados'
+        'save_path': adl.adl_full_url(ADL, workdir + '/ipea_data/raw/ipea_data_metadados')
     },
     queue = worker_queue,
     dag = dag
@@ -38,10 +35,10 @@ get_metadata = PythonOperator(
 
 save_metadata = PythonOperator(
     task_id = "save_metadata",
-    python_callable = persist.fn_save_metadata,
+    python_callable = ingest.save_metadata,
     op_kwargs = {
-        'source_path': adl.adl_full_url(ADL, workdir + '/ipea_data/raw/metadados'),
-        'table_name': 'ipeadata_metadados'
+        'source_path': adl.adl_full_url(ADL, workdir + '/ipea_data/raw/ipea_data_metadados'),
+        'table_name': 'ipea_data_metadados'
     },
     queue = worker_queue,
     dag = dag
@@ -49,11 +46,10 @@ save_metadata = PythonOperator(
 
 get_timeseries = PythonOperator(
     task_id = "get_timeseries",
-    python_callable = extract.fn_get_timeseries,
+    python_callable = ingest.get_timeseries,
     op_kwargs = {
-        'source_path': adl.adl_full_url(ADL, workdir + '/ipea_data/raw_igor//metadados/'),
-        'save_path': adl.adl_full_url(ADL, workdir + 'ipea_data/dados_igor/'),
-        'table_name': 'ipeadata_metadados'
+        'source_path': adl.adl_full_url(ADL, workdir + '/ipea_data/raw/ipea_data_metadados'),
+        'save_path': adl.adl_full_url(ADL, workdir + '/ipea_data/raw/ipea_data_series')
     },
     queue = worker_queue,
     dag = dag
@@ -61,10 +57,10 @@ get_timeseries = PythonOperator(
 
 save_timeseries = PythonOperator(
     task_id = "save_timeseries",
-    python_callable = persist.fn_save_timeseries,
+    python_callable = ingest.save_timeseries,
     op_kwargs = {
-        'source_path': adl.adl_full_url(ADL, workdir + '/ipea_data/dados/'),
-        'table_name': 'ipeadata_metadados'
+        'source_path': adl.adl_full_url(ADL, workdir + '/ipea_data/raw/ipea_data_series'),
+        'table_name': 'ipea_data_series'
     },
     queue = worker_queue,
     dag = dag
