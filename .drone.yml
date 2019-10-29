@@ -28,6 +28,59 @@ steps:
 #     event:
 #       exclude:
 #       - pull_request
+- name: deploy_worker_qas
+  image: docker/compose:1.24.1
+  commands:
+    - apk add openssh
+    - mkdir /root/.ssh
+    - echo "$SSH_KEY" > /root/.ssh/id_rsa
+    - chmod 600 /root/.ssh/id_rsa
+    - echo "$SSH_HOST" > /root/.ssh/known_hosts
+    - chmod 600 /root/.ssh/known_hosts
+    - export DOCKER_HOST=$BASE_WORKER_QAS_HOST
+    - echo Deploying Worker Projeto Compana QAS
+    - docker-compose -f ./docker/ondemand/docker-compose.yml build
+    - docker-compose -f ./docker/ondemand/docker-compose.yml up --build --detach --force-recreate
+  volumes:
+    - name: docker
+      path: /var/run/docker.sock
+  environment:
+    POSTGRES_HOST:
+      from_secret: POSTGRES_QAS_HOST
+    POSTGRES_PORT:
+      from_secret: POSTGRES_PORT
+    POSTGRES_USER:
+      from_secret: POSTGRES_QAS_USER
+    POSTGRES_PASSWORD:
+      from_secret: POSTGRES_QAS_PASSWORD
+    POSTGRES_DB:
+      from_secret: POSTGRES_DB
+    REDIS_HOST:
+      from_secret: REDIS_QAS_HOST
+    REDIS_PORT:
+      from_secret: REDIS_PORT
+    REDIS_PASSWORD:
+      from_secret: REDIS_QAS_PASSWORD
+    FERNET_KEY:
+      from_secret: FERNET_KEY
+    BASE_WORKER_QAS_HOST:
+      from_secret: BASE_WORKER_QAS_HOST
+    SSH_KEY:
+      from_secret: SSH_KEY
+    SSH_HOST:
+      from_secret: SSH_HOST
+    REMOTE_BASE_LOG_FOLDER:
+      from_secret: REMOTE_BASE_LOG_FOLDER_QAS
+    MEMCACHE_HOST:
+      from_secret: MEMCACHE_QAS_HOST
+    MEMCACHE_PORT:
+      from_secret: MEMCACHE_PORT
+  when:
+    branch:
+    - develop
+    event:
+      exclude:
+      - pull_request
 - name: deploy_dags_qas
   image: python:3
   commands:
@@ -43,6 +96,59 @@ steps:
     event:
       exclude:
         - pull_request
+- name: deploy_worker_prd
+  image: docker/compose:1.24.1
+  commands:
+    - apk add openssh
+    - mkdir /root/.ssh
+    - echo "$SSH_KEY" > /root/.ssh/id_rsa
+    - chmod 600 /root/.ssh/id_rsa
+    - echo "$SSH_HOST" > /root/.ssh/known_hosts
+    - chmod 600 /root/.ssh/known_hosts
+    - export DOCKER_HOST=$BASE_WORKER_PRD_HOST
+    - echo Deploying Worker AutoSugar PRD
+    - docker-compose -f ./docker/ondemand/docker-compose.yml build
+    - docker-compose -f ./docker/ondemand/docker-compose.yml up --build --detach --force-recreate
+  volumes:
+    - name: docker
+      path: /var/run/docker.sock
+  environment:
+    POSTGRES_HOST:
+      from_secret: POSTGRES_PRD_HOST
+    POSTGRES_PORT:
+      from_secret: POSTGRES_PORT
+    POSTGRES_USER:
+      from_secret: POSTGRES_PRD_USER
+    POSTGRES_PASSWORD:
+      from_secret: POSTGRES_PRD_PASSWORD
+    POSTGRES_DB:
+      from_secret: POSTGRES_DB
+    REDIS_HOST:
+      from_secret: REDIS_PRD_HOST
+    REDIS_PORT:
+      from_secret: REDIS_PORT
+    REDIS_PASSWORD:
+      from_secret: REDIS_PRD_PASSWORD
+    FERNET_KEY:
+      from_secret: FERNET_KEY
+    BASE_WORKER_PRD_HOST:
+      from_secret: BASE_WORKER_PRD_HOST
+    SSH_KEY:
+      from_secret: SSH_KEY
+    SSH_HOST:
+      from_secret: SSH_HOST
+    REMOTE_BASE_LOG_FOLDER:
+      from_secret: REMOTE_BASE_LOG_FOLDER_PRD
+    MEMCACHE_HOST:
+      from_secret: MEMCACHE_PRD_HOST
+    MEMCACHE_PORT:
+      from_secret: MEMCACHE_PORT
+  when:
+    branch:
+    - master
+    event:
+      exclude:
+      - pull_request
 - name: deploy_dags_prd
   image: python:3
   commands:

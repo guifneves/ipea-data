@@ -7,6 +7,12 @@ services:
     command: redis-server --requirepass redis123
     container_name: redis
 
+  memcached:
+    image: memcached
+    restart: unless-stopped
+    ports:
+      - "11211:11211"
+
   postgres:
     image: 'postgres:9.6'
     restart: unless-stopped
@@ -81,6 +87,8 @@ services:
       - ENVIRONMENT=dev
       - HOST_DAGS_PATH=./dags
       - HOST_LOGS_PATH=./logs
+      - MEMCACHE_HOST
+      - MEMCACHE_PORT
     command: airflow worker
     restart: unless-stopped
     volumes:
