@@ -25,19 +25,21 @@ services:
       - REDIS_PORT
       - REDIS_PASSWORD
       - FERNET_KEY
-      - REMOTE_BASE_LOG_FOLDER
-      - ENVIRONMENT=prod
+      - REMOTE_BASE_LOG_FOLDER=../../logs
+      - ENVIRONMENT=dev
       - MEMCACHED=True
+      - MEMCACHE_HOST
+      - MEMCACHE_PORT
     networks:
       - my-network
     command: airflow worker -q ipea-data-worker-queue #(4)
     restart: unless-stopped
     volumes:
-      - /mnt/airflow/dags:/home/engineer/dags:z #(2)
-      - /home/airflow/logs:/home/engineer/logs:z #(2)
+      - ../../dags:/home/engineer/dags:z #(2)
+      - ../../logs:/home/engineer/logs:z #(2)
     image: ipea-data-worker #(3)
 
 networks:
   my-network:
       external:
-          name: airzflow_default #(1)
+          name: ipeadata_default #(1)
