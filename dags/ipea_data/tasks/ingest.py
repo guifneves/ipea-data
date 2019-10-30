@@ -7,15 +7,15 @@ import raizenlib.utils.adl as adl
 def get_metadata(**args):
     import pyspark.sql.functions as F
     import pyIpeaData as ipea
+    
     spark = adl.get_adl_spark(args["save_path"])
     df_pd = ipea.get_metadados()
-    df = spark.createDataFrame(df_pd)
-    ref_date = datetime.now().strftime("%Y-%m-%d")
-    print("*" * 80, args["save_path"])
-    df.coalesce(1).write \
-        .format("parquet") \
-        .option("mode", "append") \
-        .save(args["save_path"] + "/ref_date=" + ref_date)
+
+    df = spark.createDataFrame(df_pd)    
+    ref_date = datetime.now().strftime("%Y%m%d")
+    
+    save_path = "{}ref_date={}".format(args["save_path"], ref_date)
+    df.coalesce(1).write.parquet(save_path, mode = "overwrite")
 
 def save_metadata(**args):
     import pyspark.sql.functions as F
@@ -30,11 +30,6 @@ def save_metadata(**args):
     #if df.count() > 0:
     #    df.write.jdbc(url=jdbc_url, table=args["table_name"], mode='overwrite', properties=conn_properties)
 
-# def get_from_ipea(code):
-#     import pyIpeaData as ipea
-#     print("==========", code)
-#     return ipea.get_serie(code[1])
-
 def get_timeseries(**args):
     import pyspark.sql.functions as F
     import pyIpeaData as ipea
@@ -44,9 +39,13 @@ def get_timeseries(**args):
         print("==========", code)
         return ipea.get_serie(code[1])
 
-    current_date = datetime.now().strftime("%Y-%m-%d")
+    cod_temas = args["cod_temas"]
+    print("Temas: " + str(cod_temas))
+
+    current_date = datetime.now().strftime("%Y%m%d")
     spark = adl.get_adl_spark(args["save_path"])
-    df_md = spark.read.format("parquet").load(args["source_path"]).filter(F.col("ref_date") == current_date)
+    df_md = spark.read.format("parquet").load(args["source_path"]).filter((F.col("ref_date") == current_date) & F.col("TEMCODIGO").isin(cod_temas))
+    #df_md = df_md.limit(5)
     codes = list(map(lambda i: i.SERCODIGO, df_md.select("SERCODIGO").distinct().collect()))
 
     print(codes)
@@ -57,10 +56,23 @@ def get_timeseries(**args):
 
     df = spark.createDataFrame(df_pd)
     df.printSchema()
-    df = df.withColumn("ref_date", F.lit(datetime.now().strftime("%Y-%m-%d")))
-    df.write \
-        .partitionBy("SERCODIGO", "ref_date") \
-        .parquet(args["save_path"], mode = "append")    
+
+    ref_date = datetime.now().strftime("%Y%m%d")
+    save_path = "{}ref_date={}/range={}".format(args["save_path"], ref_date, args["range"])
+
+    df.coalesce(1).write.parquet(save_path, mode = "overwrite")
+
+def union_timeseries(**args):
+    import pyspark.sql.functions as F
+    
+    current_date = datetime.now().strftime("%Y%m%d")
+    spark = adl.get_adl_spark(args["save_path"])
+
+    df = spark.read.format("parquet").load(args["source_path"]).filter((F.col("ref_date") == current_date)).drop("range")
+
+    df.show()
+
+    df.write.partitionBy("SERCODIGO", "ref_date").parquet(args["save_path"], mode = "overwrite")
 
 def save_timeseries(**args):
     import pyspark.sql.functions as F
@@ -68,7 +80,7 @@ def save_timeseries(**args):
     jdbc_url = ""
     conn_properties = {}
 
-    current_date = datetime.now().strftime("%Y-%m-%d")
+    current_date = datetime.now().strftime("%Y%m%d")
     spark = adl.get_adl_spark(args["source_path"])
     df = spark.read.format("parquet").load(args["source_path"]).filter(F.col("ref_date") == current_date)
     df.show()
