@@ -44,12 +44,55 @@ save_metadata = PythonOperator(
     dag = dag
 )
 
-get_timeseries = PythonOperator(
+get_timeseries1 = PythonOperator(
     task_id = "get_timeseries",
     python_callable = ingest.get_timeseries,
     op_kwargs = {
         'source_path': adl.adl_full_url(ADL, workdir + '/ipea_data/raw_igor/ipea_data_metadados'),
-        'save_path': adl.adl_full_url(ADL, workdir + '/ipea_data/raw_igor/ipea_data_series')
+        'save_path': adl.adl_full_url(ADL, workdir + '/ipea_data/raw_igor/ipea_data_series'),
+        'lista_inicio': 0,
+        'lista_fim': 11
+    },
+    queue = worker_queue,
+    dag = dag
+)
+
+get_timeseries2 = PythonOperator(
+    task_id = "get_timeseries",
+    python_callable = ingest.get_timeseries,
+    op_kwargs = {
+        'source_path': adl.adl_full_url(ADL, workdir + '/ipea_data/raw_igor/ipea_data_metadados'),
+        'save_path': adl.adl_full_url(ADL, workdir + '/ipea_data/raw_igor/ipea_data_series'),
+        'lista_inicio': 11,
+        'lista_fim': 22
+
+    },
+    queue = worker_queue,
+    dag = dag
+)
+
+get_timeseries3 = PythonOperator(
+    task_id = "get_timeseries",
+    python_callable = ingest.get_timeseries,
+    op_kwargs = {
+        'source_path': adl.adl_full_url(ADL, workdir + '/ipea_data/raw_igor/ipea_data_metadados'),
+        'save_path': adl.adl_full_url(ADL, workdir + '/ipea_data/raw_igor/ipea_data_series'),
+        'lista_inicio': 22,
+        'lista_fim': 33
+    },
+    queue = worker_queue,
+    dag = dag
+)
+
+get_timeseries4 = PythonOperator(
+    task_id = "get_timeseries",
+    python_callable = ingest.get_timeseries,
+    op_kwargs = {
+        'source_path': adl.adl_full_url(ADL, workdir + '/ipea_data/raw_igor/ipea_data_metadados'),
+        'save_path': adl.adl_full_url(ADL, workdir + '/ipea_data/raw_igor/ipea_data_series'),
+        'lista_inicio': 33,
+        'lista_fim': None
+
     },
     queue = worker_queue,
     dag = dag
@@ -66,5 +109,5 @@ save_timeseries = PythonOperator(
     dag = dag
 )
 
-get_metadata >> [save_metadata, get_timeseries]
-get_timeseries >> save_timeseries
+get_metadata >> [save_metadata, get_timeseries1,get_timeseries2,get_timeseries3,get_timeseries4]
+[get_timeseries1,get_timeseries2,get_timeseries3,get_timeseries4] >> save_timeseries

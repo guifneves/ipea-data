@@ -46,9 +46,10 @@ def get_timeseries(**args):
 
     current_date = datetime.now().strftime("%Y-%m-%d")
     spark = adl.get_adl_spark(args["save_path"])
-    df_md = spark.read.format("parquet").load(args["source_path"]).filter(F.col("ref_date") == current_date)
-    codes = list(map(lambda i: i.SERCODIGO, df_md.select("SERCODIGO").distinct().collect()))
-
+    listas = [int(row.TEMCODIGO) for row in df_md.select("TEMCODIGO").distinct().collect()]
+    lista = lista[args["lista_inicio"]:args["lista_fim"]]
+    df_md = spark.read.format("parquet").load(args["source_path"]).filter(F.col("ref_date") == current_date).filter((col("TEMCODIGO").isin(lista)))
+    codes = list(map(lambda i: i.SERCODIGO,df_md.select("SERCODIGO").distinct().collect()))
     print(codes)
     #dfs = list(map(lambda code: get_from_ipea(code), list(enumerate(codes))))    
     dfs = spark.sparkContext.parallelize(list(enumerate(codes))).map(lambda x: get_from_ipea(x)).collect()
