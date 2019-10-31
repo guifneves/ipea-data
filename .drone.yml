@@ -92,7 +92,7 @@ steps:
        path: /dags
   when:
     branch:
-    - dev
+    - develop
     event:
       exclude:
         - pull_request
