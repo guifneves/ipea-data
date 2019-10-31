@@ -1,4 +1,4 @@
-FROM airzflow:latest
+FROM rzldt.azurecr.io/airzflow:latest
 
 RUN pip install --user apache-airflow[hive,jdbc]
 
@@ -64,6 +64,7 @@ RUN pip install --user JPype1==0.6.3
 RUN pip install --user jaydebeapi
 RUN pip install --user joblib
 RUN pip install --user pyIpeaData
+
 RUN pip install --user great_expectations
 
 USER root

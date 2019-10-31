@@ -1,0 +1,115 @@
+[33mcommit 4f3605e8cf5321f54231badb26267b1dbfbc78c2[m[33m ([m[1;36mHEAD -> [m[1;32mdev-igor[m[33m, [m[1;31morigin/dev-igor[m[33m)[m
+Author: igorccsilveira1 <igor.silveira@keyrus.com.br>
+Date:   Tue Oct 29 10:59:15 2019 -0300
+
+    Referências airzflow
+
+[33mcommit b9db865e8d2c99d9939c39c659de5bba40f4929d[m
+Merge: 7e9af6d 226a3ac
+Author: igorccsilveira1 <igor.silveira@keyrus.com.br>
+Date:   Tue Oct 29 09:19:41 2019 -0300
+
+    Merge branch 'develop' of https://github.com/raizen-analytics-ldt/ipea-data into dev-igor
+
+[33mcommit 7e9af6df96319346199cb4edd6f1df4c00c9cb87[m
+Merge: 49ee2f7 fef7f19
+Author: igorccsilveira1 <igor.silveira@keyrus.com.br>
+Date:   Wed Oct 16 17:46:34 2019 -0300
+
+    .
+
+[33mcommit 226a3ace88cb7d610bbf83d064a6b79bbf37382a[m[33m ([m[1;31morigin/develop[m[33m)[m
+Author: Guilherme Neves <guilherme.neves@raizen.com>
+Date:   Mon Sep 23 18:49:52 2019 -0300
+
+    removing memcache
+
+[33mcommit fef7f198facfa09e7ac702294285f6d0525657df[m[33m ([m[1;31morigin/lbarbosa[m[33m, [m[1;32mlbarbosa[m[33m)[m
+Author: Leonardo Barbosa <leonardo.barbosa@keyrus.com.br>
+Date:   Fri Sep 6 16:14:56 2019 -0300
+
+    ipea_data
+
+[33mcommit 1b67142a5ac979e8ce53dbca56950d3b73fb0ebe[m
+Author: Leonardo Barbosa <leonardo.barbosa@keyrus.com.br>
+Date:   Fri Sep 6 15:55:53 2019 -0300
+
+    ipea_data
+
+[33mcommit 49ee2f70b98d56ca6ee20aa85963fe4e03a77f1f[m
+Author: igorccsilveira1 <igor.silveira@keyrus.com.br>
+Date:   Fri Sep 6 10:03:07 2019 -0300
+
+    Organizaão dos arquivos
+
+[33mcommit 2bfdf7b3831576c7d9af8763405f9cf207059aff[m
+Author: igorccsilveira1 <igor.silveira@keyrus.com.br>
+Date:   Fri Sep 6 09:23:07 2019 -0300
+
+    Criação do branch
+
+[33mcommit 3d1493eb26ba15e3322af3a21c97558d77e0c65f[m
+Author: Leonardo Barbosa <leonardo.barbosa@keyrus.com.br>
+Date:   Wed Sep 4 17:13:10 2019 -0300
+
+    Save data
+
+[33mcommit 8c8f4f59b85eb03e71d1ed8580fdae034b3151ce[m
+Author: Leonardo Barbosa <leonardo.barbosa@keyrus.com.br>
+Date:   Wed Sep 4 15:38:36 2019 -0300
+
+    Correção path
+
+[33mcommit 8dc009d53aa8f7209295c73d1ebb5329b4d32b91[m
+Author: Leonardo Barbosa <leonardo.barbosa@keyrus.com.br>
+Date:   Wed Sep 4 14:51:04 2019 -0300
+
+    Submodule
+
+[33mcommit 5c1a04f917ccabcf2f5678092ce18f506c952566[m
+Author: Leonardo Barbosa <leonardo.barbosa@keyrus.com.br>
+Date:   Wed Sep 4 14:12:40 2019 -0300
+
+    IpeaData
+
+[33mcommit 1c163e80d5553e025b0ece44f23446a651d92807[m
+Author: Leonardo Barbosa <leonardo.barbosa@keyrus.com.br>
+Date:   Wed Sep 4 14:10:20 2019 -0300
+
+    IpeaData
+
+[33mcommit 903ff0f2b71915161c99c67a2433197c0b273743[m
+Author: Leonardo Barbosa <leonardo.barbosa@keyrus.com.br>
+Date:   Wed Sep 4 14:09:44 2019 -0300
+
+    IpeaData
+
+[33mcommit 83a876ccc52ec8a83d4b1d9a72e6e55afee1ba41[m
+Author: Leonardo Barbosa <leonardo.barbosa@keyrus.com.br>
+Date:   Tue Sep 3 18:49:50 2019 -0300
+
+    Add submodule and ipea import
+
+[33mcommit e07ff9b22e6af263f7147cb487b1f17ccfc00058[m[33m ([m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmaster[m[33m)[m
+Author: Guilherme Neves <guilherme.neves@raizen.com>
+Date:   Tue Sep 3 11:01:50 2019 -0300
+
+    Change Readme
+
+[33mcommit 14b1b16979a26cc53b331921fa5be2c0b8ce9aae[m
+Author: Guilherme Neves <guilherme.neves@raizen.com>
+Date:   Tue Sep 3 10:31:14 2019 -0300
+
+    Adding Docker itens for ipea worker
+
+[33mcommit 7fabe28ec78a0d46b1a2c87fdee3000a03519348[m
+Author: Guilherme Neves <guilherme.neves@raizen.com>
+Date:   Tue Sep 3 09:06:52 2019 -0300
+
+    put logs folder on gitignore
+
+[33mcommit c0f180dca24e13af76112c0a7650987ff7654705[m
+Author: Guilherme Neves <gui.fneves@gmail.com>
+Date:   Tue Sep 3 09:03:35 2019 -0300
+
+    Initial commit

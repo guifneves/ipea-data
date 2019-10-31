@@ -3,7 +3,6 @@ services:
 
   redis:
     image: 'redis:3.2.7'
-    restart: unless-stopped
     command: redis-server --requirepass redis123
     container_name: redis
 
@@ -12,10 +11,10 @@ services:
     restart: unless-stopped
     ports:
       - "11211:11211"
+    container_name: memcache
 
   postgres:
     image: 'postgres:9.6'
-    restart: unless-stopped
     environment:
       - POSTGRES_USER=airflow
       - POSTGRES_PASSWORD=airflow
@@ -26,7 +25,7 @@ services:
     container_name: postgres
 
   webserver:
-    image: airflow_webserver:latest
+    image: rzldt.azurecr.io/airzflow:latest
     environment:
       - POSTGRES_HOST
       - POSTGRES_PORT
@@ -46,33 +45,10 @@ services:
     restart: unless-stopped
     volumes:
       - ./dags:/home/engineer/dags:z
-      - ./logs:/home/engineer/logs:z
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   scheduler:
-    image: airflow_webserver:latest
-    environment:
-      - POSTGRES_HOST
-      - POSTGRES_PORT
-      - POSTGRES_USER
-      - POSTGRES_PASSWORD
-      - POSTGRES_DB
-      - REDIS_HOST
-      - REDIS_PORT
-      - REDIS_PASSWORD
-      - FERNET_KEY
-      - REMOTE_BASE_LOG_FOLDER
-      - ENVIRONMENT=dev
-      - HOST_DAGS_PATH=./dags
-    command: airflow scheduler
-    restart: unless-stopped
-    volumes:
-      - ./dags:/home/engineer/dags:z
-      - ./logs:/home/engineer/logs:z
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-
-  worker:
-    image: airflow_webserver:latest
+    image: rzldt.azurecr.io/airzflow:latest
     environment:
       - POSTGRES_HOST
       - POSTGRES_PORT
@@ -86,17 +62,40 @@ services:
       - REMOTE_BASE_LOG_FOLDER=./logs
       - ENVIRONMENT=dev
       - HOST_DAGS_PATH=./dags
+    command: airflow scheduler
+    restart: unless-stopped
+    volumes:
+      - ./dags:/home/engineer/dags:z
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  worker:
+    image: rzldt.azurecr.io/airzflow:latest
+    environment:
+      - POSTGRES_HOST
+      - POSTGRES_PORT
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_DB
+      - REDIS_HOST
+      - REDIS_PORT
+      - REDIS_PASSWORD
+      - FERNET_KEY
+      - ENVIRONMENT=dev
+      - REMOTE_BASE_LOG_FOLDER=./logs
+      - MEMCACHED=True
+      - HOST_DAGS_PATH=./dags
       - HOST_LOGS_PATH=./logs
       - MEMCACHE_HOST
       - MEMCACHE_PORT
     command: airflow worker
     restart: unless-stopped
     volumes:
-      - ./dags:/home/engineer/dags:z
-      - ./logs:/home/engineer/logs:z
+      - ./dags:/home/engineer/dags:z      
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./logs:/home/engineer/logs:z
+      
   flower:
-    image: airflow_webserver:latest
+    image: rzldt.azurecr.io/airzflow:latest
     environment:
       - POSTGRES_HOST
       - POSTGRES_PORT
