@@ -55,6 +55,8 @@ def get_timeseries(**args):
         with client.open(save_path, 'wb') as f:        
             df_serie.to_parquet(f)
 
+        del df_serie
+
     # def get_from_ipea(code,save_path):
     #     import pyIpeaData as ipea
     #     print("==========", code)
