@@ -53,7 +53,7 @@ ENV SPARK_OPTS "--driver-java-options=-Xms1024M --driver-java-options=-Xmx4096M 
 
 RUN pip install pyspark==2.3.1
 RUN pip install findspark
-RUN pip install pyarrow
+RUN pip install pyarrow==0.14.1
 
 USER engineer
 WORKDIR /home/engineer/
@@ -66,6 +66,7 @@ RUN pip install --user joblib
 RUN pip install --user pyIpeaData
 
 RUN pip install --user great_expectations
+RUN pip install --user azure-cli
 
 USER root
 COPY ./libs/mssql-jdbc-7.2.2.jre8.jar ./libs/mssql-jdbc-7.2.2.jre8.jar
