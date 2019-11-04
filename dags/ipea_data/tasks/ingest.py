@@ -6,7 +6,7 @@ import raizenlib.utils.adl as adl
 
 def get_connection_sql_server():
     from airflow.hooks.base_hook import BaseHook
-    connection = BaseHook.get_connection("mssql_default")
+    connection = BaseHook.get_connection("mssql_autosugar")
 
     print("Get connection sql server")
 
