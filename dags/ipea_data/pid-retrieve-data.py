@@ -45,7 +45,8 @@ save_metadata = PythonOperator(
     python_callable = ingest.save_metadata,
     op_kwargs = {
         'source_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/metadados/'),
-        'table_name': 'ipea_data_metadados'
+        'schema_name': 'ipea_data',
+        'table_name': 'metadados'
     },
     queue = worker_queue,
     dag = dag
@@ -581,8 +582,9 @@ save_timeseries = PythonOperator(
     task_id = "save_timeseries",
     python_callable = ingest.save_timeseries,
     op_kwargs = {
-        'source_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series'),
-        'table_name': 'ipea_data_series'
+        'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series'),
+        'schema_name': 'ipea_data',
+        'relationship_table': 'sercodigo_temcodigo'
     },
     queue = worker_queue,
     dag = dag
