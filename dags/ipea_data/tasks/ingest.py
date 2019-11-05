@@ -69,7 +69,7 @@ def get_timeseries(**args):
         df_serie["VALVALOR"] = df_serie["VALVALOR"].astype("str")
 
         ref_date = datetime.now().strftime("%Y%m%d")
-        save_path = "{}REF_DATE={}/TEMCODIGO={}/SERCODIGO={}/{}.parquet".format(save_path, ref_date, temcodigo, sercodigo, sercodigo)
+        save_path = "{}TEMCODIGO={}/REF_DATE={}/SERCODIGO={}/{}.parquet".format(save_path, temcodigo, ref_date, sercodigo, sercodigo)
 
         with client.open(save_path, 'wb') as f:        
             df_serie.to_parquet(f)
@@ -93,9 +93,29 @@ def save_timeseries(**args):
     import pyspark.sql.functions as F
 
     jdbc_url, connection_properties = get_connection_sql_server()
-    
-    spark = adl.get_adl_spark(args["source_path_series"])
 
+    cod_tema = args["cod_tema"]
+    name_tema = args["name_tema"]
+    source_path_series = args["source_path_series"]
+    spark = adl.get_adl_spark(args["source_path_series"])    
+
+    source_path = "{}TEMCODIGO={}".format(source_path_series, cod_tema)
+    print("Read file ", source_path)
+    df = spark.read.format("parquet").load(source_path)
+
+    print("Save table ", name_tema)
+    table = "{}.{}{}".format(args["schema_name"],"timeserie_", name_tema)
+    df.write.jdbc(url=jdbc_url, table=table, mode='overwrite', properties=connection_properties)
+
+def save_relationship_table(**args):
+    import pyspark.sql.functions as F
+
+    jdbc_url, connection_properties = get_connection_sql_server()
+    spark = adl.get_adl_spark(args["source_path"]) 
+    
+    current_date = datetime.now().strftime("%Y%m%d")
+    df_metadados = spark.read.format("parquet").load(args["source_path"]).filter(F.col("REF_DATE") == current_date)
+    
     temas =\
         [
             [1, 'producao'], [2, 'consumo_e_vendas'], [3, 'moeda_e_credito'], [5, 'comercio_exterior'], [6, 'financas_publicas'], [7, 'cambio'],
@@ -108,32 +128,18 @@ def save_timeseries(**args):
             [79, 'idhm2000'], [81, 'contas_regionais']
         ]
 
-    current_date = datetime.now().strftime("%Y%m%d")    
-    df = spark.read.format("parquet").load(args["source_path_series"])
-
-    df.cache()
-    df.head(1)
-
-    print("Save tables")
-    for cod_tema, desc_tema in temas:
-        print("Save table ", desc_tema)
-        table = "{}.{}{}".format(args["schema_name"],"timeserie_", desc_tema)
-        df.filter(F.col("TEMCODIGO") == cod_tema).write.jdbc(url=jdbc_url, table=table, mode='overwrite', properties=connection_properties)
-
     df_temas = spark.createDataFrame(temas,["TEMCODIGO", "TEMNOME"]) 
 
-    df_relacionamento = df.select(F.col("SERCODIGO"), F.col("TEMCODIGO")).distinct()
-    df_relacionamento = df_relacionamento \
-        .join(df_temas, df_relacionamento.TEMCODIGO == df_temas.TEMCODIGO, "inner") \
+    df = df_metadados.select(F.col("SERCODIGO"), F.col("TEMCODIGO")).distinct()
+    df = df \
+        .join(df_temas, df.TEMCODIGO == df_temas.TEMCODIGO, "inner") \
         .select(
-            df_relacionamento.SERCODIGO,
+            df.SERCODIGO,
             df_temas.TEMCODIGO,
             df_temas.TEMNOME
         )
 
 
     print("Save table relationship")
-    table = "{}.{}".format(args["schema_name"],args["relationship_table"],)
-    df_relacionamento.write.jdbc(url=jdbc_url, table=table, mode='overwrite', properties=connection_properties)
-
-    df.unpersist()
+    table = "{}.{}".format(args["schema_name"],args["table"],)
+    df.write.jdbc(url=jdbc_url, table=table, mode='overwrite', properties=connection_properties)
