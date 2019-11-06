@@ -6,7 +6,9 @@ import raizenlib.utils.adl as adl
 
 def get_connection_sql_server():
     from airflow.hooks.base_hook import BaseHook
-    connection = BaseHook.get_connection("mssql_default")
+    import json
+
+    connection = BaseHook.get_connection("mssql_ipea")
 
     print("Get connection sql server")
 
@@ -15,6 +17,7 @@ def get_connection_sql_server():
     port = connection.port
     username = connection.login
     password = connection.password
+    database_schema = json.loads(connection.extra)['database_schema']
 
     jdbc_url = "jdbc:sqlserver://{0}:{1};database={2}".format(host, port, schema)
     connection_properties = {
@@ -23,7 +26,7 @@ def get_connection_sql_server():
         "driver" : "com.microsoft.sqlserver.jdbc.SQLServerDriver"
     }
 
-    return jdbc_url, connection_properties
+    return jdbc_url, connection_properties, database_schema
 
 def get_metadata(**args):
     import pyspark.sql.functions as F
@@ -41,13 +44,13 @@ def get_metadata(**args):
 def save_metadata(**args):
     import pyspark.sql.functions as F
 
-    jdbc_url, connection_properties = get_connection_sql_server()            
+    jdbc_url, connection_properties, database_schema = get_connection_sql_server()            
     spark = adl.get_adl_spark(args["source_path"])
     
     current_date = datetime.now().strftime("%Y%m%d")
     df = spark.read.format("parquet").load(args["source_path"]).filter(F.col("REF_DATE") == current_date)
     
-    table = "{}.{}".format(args["schema_name"], args["table_name"])
+    table = "{}.{}".format(database_schema, args["table_name"])
     df.write.jdbc(url=jdbc_url, table=table, mode='overwrite', properties=connection_properties)
 
 def clear_timeseries(**args):
@@ -92,7 +95,7 @@ def get_timeseries(**args):
 def save_timeseries(**args):
     import pyspark.sql.functions as F
 
-    jdbc_url, connection_properties = get_connection_sql_server()
+    jdbc_url, connection_properties, database_schema = get_connection_sql_server()
 
     cod_tema = args["cod_tema"]
     name_tema = args["name_tema"]
@@ -103,14 +106,25 @@ def save_timeseries(**args):
     print("Read file ", source_path)
     df = spark.read.format("parquet").load(source_path)
 
+    print("Transformations") 
+    df = df.withColumn("VALVALOR", F.when(F.col("VALVALOR") == "nan", None).otherwise(F.col("VALVALOR")))
+    df = df.withColumn("NIVNOME", F.when(F.col("NIVNOME") == "", None).otherwise(F.col("NIVNOME")))
+    df = df.withColumn("TERCODIGO", F.when(F.col("TERCODIGO") == "", None).otherwise(F.col("TERCODIGO")))
+    df = df.withColumn("VALDATA", F.col("VALDATA").cast("date"))
+
+    if cod_tema not in [54, 55, 56, 57, 58, 59, 60]:
+        print("Cast value to double")
+        df = df.withColumn("VALVALOR", F.col("VALVALOR").cast("double"))
+    
+
     print("Save table ", name_tema)
-    table = "{}.{}{}".format(args["schema_name"],"timeserie_", name_tema)
+    table = "{}.{}{}".format(database_schema,"timeserie_", name_tema)
     df.write.jdbc(url=jdbc_url, table=table, mode='overwrite', properties=connection_properties)
 
 def save_relationship_table(**args):
     import pyspark.sql.functions as F
 
-    jdbc_url, connection_properties = get_connection_sql_server()
+    jdbc_url, connection_properties, database_schema = get_connection_sql_server()
     spark = adl.get_adl_spark(args["source_path"]) 
     
     current_date = datetime.now().strftime("%Y%m%d")
@@ -141,5 +155,5 @@ def save_relationship_table(**args):
 
 
     print("Save table relationship")
-    table = "{}.{}".format(args["schema_name"],args["table"],)
+    table = "{}.{}".format(database_schema, args["table"],)
     df.write.jdbc(url=jdbc_url, table=table, mode='overwrite', properties=connection_properties)

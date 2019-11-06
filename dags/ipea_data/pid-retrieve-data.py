@@ -25,7 +25,7 @@ dag = DAG(
     dag_id, 
     catchup=False, 
     default_args=default_args, 
-    schedule_interval="@daily", 
+    schedule_interval="0 15 * * *", 
     max_active_runs=1,
     concurrency = 3
 )
@@ -45,7 +45,6 @@ save_metadata = PythonOperator(
     python_callable = ingest.save_metadata,
     op_kwargs = {
         'source_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/metadados/'),
-        'schema_name': 'ipea_data',
         'table_name': 'metadados'
     },
     queue = worker_queue,
@@ -583,7 +582,6 @@ get_timeseries_vereador = PythonOperator(
 #     python_callable = ingest.save_timeseries,
 #     op_kwargs = {
 #         'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
-#         'schema_name': 'ipea_data',
 #         'relationship_table': 'sercodigo_temcodigo'
 #     },
 #     queue = worker_queue,
@@ -598,8 +596,7 @@ save_timeseries_agropecuaria = PythonOperator(
     task_id = "save_timeseries_agropecuaria",
     python_callable = ingest.save_timeseries,
     op_kwargs = {
-        'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
-        'schema_name': 'ipea_data',
+        'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),        
         'cod_tema': 28,
         'name_tema': 'agropecuaria'
     },
@@ -612,7 +609,6 @@ save_timeseries_assistencia_social = PythonOperator(
     python_callable = ingest.save_timeseries,
     op_kwargs = {
         'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
-        'schema_name': 'ipea_data',
         'cod_tema': 23,
         'name_tema': 'assistencia_social'
     },
@@ -625,7 +621,6 @@ save_timeseries_balanco_de_pagamentos = PythonOperator(
     python_callable = ingest.save_timeseries,
     op_kwargs = {
         'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
-        'schema_name': 'ipea_data',
         'cod_tema': 10,
         'name_tema': 'balanco_de_pagamentos'
     },
@@ -638,7 +633,6 @@ save_timeseries_cambio = PythonOperator(
     python_callable = ingest.save_timeseries,
     op_kwargs = {
         'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
-        'schema_name': 'ipea_data',
         'cod_tema': 7,
         'name_tema': 'cambio'
     },
@@ -651,7 +645,6 @@ save_timeseries_comercio_exterior = PythonOperator(
     python_callable = ingest.save_timeseries,
     op_kwargs = {
         'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
-        'schema_name': 'ipea_data',
         'cod_tema': 5,
         'name_tema': 'comercio_exterior'
     },
@@ -664,7 +657,6 @@ save_timeseries_consumo_e_vendas = PythonOperator(
     python_callable = ingest.save_timeseries,
     op_kwargs = {
         'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
-        'schema_name': 'ipea_data',
         'cod_tema': 2,
         'name_tema': 'consumo_e_vendas'
     },
@@ -677,7 +669,6 @@ save_timeseries_contas_nacionais = PythonOperator(
     python_callable = ingest.save_timeseries,
     op_kwargs = {
         'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
-        'schema_name': 'ipea_data',
         'cod_tema': 8,
         'name_tema': 'contas_nacionais'
     },
@@ -690,7 +681,6 @@ save_timeseries_contas_regionais = PythonOperator(
     python_callable = ingest.save_timeseries,
     op_kwargs = {
         'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
-        'schema_name': 'ipea_data',
         'cod_tema': 81,
         'name_tema': 'contas_regionais'
     },
@@ -703,7 +693,6 @@ save_timeseries_correcao_monetaria = PythonOperator(
     python_callable = ingest.save_timeseries,
     op_kwargs = {
         'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
-        'schema_name': 'ipea_data',
         'cod_tema': 24,
         'name_tema': 'correcao_monetaria'
     },
@@ -716,7 +705,6 @@ save_timeseries_demografia = PythonOperator(
     python_callable = ingest.save_timeseries,
     op_kwargs = {
         'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
-        'schema_name': 'ipea_data',
         'cod_tema': 37,
         'name_tema': 'demografia'
     },
@@ -729,7 +717,6 @@ save_timeseries_deputado_estadual = PythonOperator(
     python_callable = ingest.save_timeseries,
     op_kwargs = {
         'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
-        'schema_name': 'ipea_data',
         'cod_tema': 54,
         'name_tema': 'deputado_estadual'
     },
@@ -742,7 +729,6 @@ save_timeseries_deputado_federal = PythonOperator(
     python_callable = ingest.save_timeseries,
     op_kwargs = {
         'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
-        'schema_name': 'ipea_data',
         'cod_tema': 55,
         'name_tema': 'deputado_federal'
     },
@@ -755,7 +741,6 @@ save_timeseries_desenvolvimento_humano = PythonOperator(
     python_callable = ingest.save_timeseries,
     op_kwargs = {
         'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
-        'schema_name': 'ipea_data',
         'cod_tema': 38,
         'name_tema': 'desenvolvimento_humano'
     },
@@ -768,7 +753,6 @@ save_timeseries_economia_internacional = PythonOperator(
     python_callable = ingest.save_timeseries,
     op_kwargs = {
         'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
-        'schema_name': 'ipea_data',
         'cod_tema': 11,
         'name_tema': 'economia_internacional'
     },
@@ -781,7 +765,6 @@ save_timeseries_educacao = PythonOperator(
     python_callable = ingest.save_timeseries,
     op_kwargs = {
         'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
-        'schema_name': 'ipea_data',
         'cod_tema': 29,
         'name_tema': 'educacao'
     },
@@ -794,7 +777,6 @@ save_timeseries_eleitorado = PythonOperator(
     python_callable = ingest.save_timeseries,
     op_kwargs = {
         'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
-        'schema_name': 'ipea_data',
         'cod_tema': 63,
         'name_tema': 'eleitorado'
     },
@@ -807,7 +789,6 @@ save_timeseries_emprego = PythonOperator(
     python_callable = ingest.save_timeseries,
     op_kwargs = {
         'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
-        'schema_name': 'ipea_data',
         'cod_tema': 12,
         'name_tema': 'emprego'
     },
@@ -820,7 +801,6 @@ save_timeseries_estoque_de_capital = PythonOperator(
     python_callable = ingest.save_timeseries,
     op_kwargs = {
         'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
-        'schema_name': 'ipea_data',
         'cod_tema': 19,
         'name_tema': 'estoque_de_capital'
     },
@@ -833,7 +813,6 @@ save_timeseries_financas_publicas = PythonOperator(
     python_callable = ingest.save_timeseries,
     op_kwargs = {
         'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
-        'schema_name': 'ipea_data',
         'cod_tema': 6,
         'name_tema': 'financas_publicas'
     },
@@ -846,7 +825,6 @@ save_timeseries_financeiras = PythonOperator(
     python_callable = ingest.save_timeseries,
     op_kwargs = {
         'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
-        'schema_name': 'ipea_data',
         'cod_tema': 39,
         'name_tema': 'financeiras'
     },
@@ -859,7 +837,6 @@ save_timeseries_geografico = PythonOperator(
     python_callable = ingest.save_timeseries,
     op_kwargs = {
         'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
-        'schema_name': 'ipea_data',
         'cod_tema': 32,
         'name_tema': 'geografico'
     },
@@ -872,7 +849,6 @@ save_timeseries_governador = PythonOperator(
     python_callable = ingest.save_timeseries,
     op_kwargs = {
         'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
-        'schema_name': 'ipea_data',
         'cod_tema': 56,
         'name_tema': 'governador'
     },
@@ -885,7 +861,6 @@ save_timeseries_habitacao = PythonOperator(
     python_callable = ingest.save_timeseries,
     op_kwargs = {
         'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
-        'schema_name': 'ipea_data',
         'cod_tema': 31,
         'name_tema': 'habitacao'
     },
@@ -898,7 +873,6 @@ save_timeseries_idhm2000 = PythonOperator(
     python_callable = ingest.save_timeseries,
     op_kwargs = {
         'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
-        'schema_name': 'ipea_data',
         'cod_tema': 79,
         'name_tema': 'idhm2000'
     },
@@ -911,7 +885,6 @@ save_timeseries_indicadores_sociais = PythonOperator(
     python_callable = ingest.save_timeseries,
     op_kwargs = {
         'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
-        'schema_name': 'ipea_data',
         'cod_tema': 15,
         'name_tema': 'indicadores_sociais'
     },
@@ -924,7 +897,6 @@ save_timeseries_mercado_de_trabalho = PythonOperator(
     python_callable = ingest.save_timeseries,
     op_kwargs = {
         'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
-        'schema_name': 'ipea_data',
         'cod_tema': 40,
         'name_tema': 'mercado_de_trabalho'
     },
@@ -937,7 +909,6 @@ save_timeseries_moeda_e_credito = PythonOperator(
     python_callable = ingest.save_timeseries,
     op_kwargs = {
         'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
-        'schema_name': 'ipea_data',
         'cod_tema': 3,
         'name_tema': 'moeda_e_credito'
     },
@@ -950,7 +921,6 @@ save_timeseries_percepcao_e_expectativa = PythonOperator(
     python_callable = ingest.save_timeseries,
     op_kwargs = {
         'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
-        'schema_name': 'ipea_data',
         'cod_tema': 27,
         'name_tema': 'percepcao_e_expectativa'
     },
@@ -963,7 +933,6 @@ save_timeseries_populacao = PythonOperator(
     python_callable = ingest.save_timeseries,
     op_kwargs = {
         'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
-        'schema_name': 'ipea_data',
         'cod_tema': 14,
         'name_tema': 'populacao'
     },
@@ -976,7 +945,6 @@ save_timeseries_precos = PythonOperator(
     python_callable = ingest.save_timeseries,
     op_kwargs = {
         'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
-        'schema_name': 'ipea_data',
         'cod_tema': 9,
         'name_tema': 'precos'
     },
@@ -989,7 +957,6 @@ save_timeseries_prefeito = PythonOperator(
     python_callable = ingest.save_timeseries,
     op_kwargs = {
         'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
-        'schema_name': 'ipea_data',
         'cod_tema': 57,
         'name_tema': 'prefeito'
     },
@@ -1002,7 +969,6 @@ save_timeseries_presidente = PythonOperator(
     python_callable = ingest.save_timeseries,
     op_kwargs = {
         'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
-        'schema_name': 'ipea_data',
         'cod_tema': 58,
         'name_tema': 'presidente'
     },
@@ -1015,7 +981,6 @@ save_timeseries_producao = PythonOperator(
     python_callable = ingest.save_timeseries,
     op_kwargs = {
         'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
-        'schema_name': 'ipea_data',
         'cod_tema': 1,
         'name_tema': 'producao'
     },
@@ -1028,7 +993,6 @@ save_timeseries_projecoes = PythonOperator(
     python_callable = ingest.save_timeseries,
     op_kwargs = {
         'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
-        'schema_name': 'ipea_data',
         'cod_tema': 16,
         'name_tema': 'projecoes'
     },
@@ -1041,7 +1005,6 @@ save_timeseries_renda = PythonOperator(
     python_callable = ingest.save_timeseries,
     op_kwargs = {
         'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
-        'schema_name': 'ipea_data',
         'cod_tema': 30,
         'name_tema': 'renda'
     },
@@ -1054,7 +1017,6 @@ save_timeseries_salario_e_renda = PythonOperator(
     python_callable = ingest.save_timeseries,
     op_kwargs = {
         'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
-        'schema_name': 'ipea_data',
         'cod_tema': 13,
         'name_tema': 'salario_e_renda'
     },
@@ -1067,7 +1029,6 @@ save_timeseries_saude = PythonOperator(
     python_callable = ingest.save_timeseries,
     op_kwargs = {
         'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
-        'schema_name': 'ipea_data',
         'cod_tema': 41,
         'name_tema': 'saude'
     },
@@ -1080,7 +1041,6 @@ save_timeseries_seguranca_publica = PythonOperator(
     python_callable = ingest.save_timeseries,
     op_kwargs = {
         'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
-        'schema_name': 'ipea_data',
         'cod_tema': 20,
         'name_tema': 'seguranca_publica'
     },
@@ -1093,7 +1053,6 @@ save_timeseries_senador = PythonOperator(
     python_callable = ingest.save_timeseries,
     op_kwargs = {
         'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
-        'schema_name': 'ipea_data',
         'cod_tema': 59,
         'name_tema': 'senador'
     },
@@ -1106,7 +1065,6 @@ save_timeseries_sinopse_macroeconomica = PythonOperator(
     python_callable = ingest.save_timeseries,
     op_kwargs = {
         'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
-        'schema_name': 'ipea_data',
         'cod_tema': 17,
         'name_tema': 'sinopse_macroeconomica'
     },
@@ -1119,7 +1077,6 @@ save_timeseries_transporte = PythonOperator(
     python_callable = ingest.save_timeseries,
     op_kwargs = {
         'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
-        'schema_name': 'ipea_data',
         'cod_tema': 33,
         'name_tema': 'transporte'
     },
@@ -1132,7 +1089,6 @@ save_timeseries_vendas = PythonOperator(
     python_callable = ingest.save_timeseries,
     op_kwargs = {
         'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
-        'schema_name': 'ipea_data',
         'cod_tema': 26,
         'name_tema': 'vendas'
     },
@@ -1145,7 +1101,6 @@ save_timeseries_vereador  = PythonOperator(
     python_callable = ingest.save_timeseries,
     op_kwargs = {
         'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
-        'schema_name': 'ipea_data',
         'cod_tema': 60,
         'name_tema': 'vereador '
     },
@@ -1158,7 +1113,7 @@ save_relationship_table  = PythonOperator(
     python_callable = ingest.save_relationship_table,
     op_kwargs = {
         'source_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/metadados/'),
-        'schema_name': 'ipea_data',
+
         'table': 'sercodigo_temcodigo'
     },
     queue = worker_queue,
