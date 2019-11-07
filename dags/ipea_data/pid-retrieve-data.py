@@ -27,7 +27,7 @@ dag = DAG(
     default_args=default_args, 
     schedule_interval="0 15 * * *", 
     max_active_runs=1,
-    concurrency = 3
+    concurrency = 4
 )
 
 get_metadata = PythonOperator(
