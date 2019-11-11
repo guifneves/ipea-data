@@ -34,6 +34,8 @@ def get_metadata(**args):
     
     spark = adl.get_adl_spark(args["save_path"])
     df_pd = ipea.get_metadados()
+    if type(df_pd) == type(None):
+        raise ValueError('API return error!')
 
     df = spark.createDataFrame(df_pd)    
     ref_date = datetime.now().strftime("%Y%m%d")
@@ -68,7 +70,10 @@ def get_timeseries(**args):
         temcodigo = code[1]
         sernumerica = code[2]
         
-        df_serie = ipea.get_serie(sercodigo)        
+        df_serie = ipea.get_serie(sercodigo)
+        if type(df_serie) == type(None):
+            raise ValueError('API return error!')
+
         df_serie = df_serie.drop('SERCODIGO', 1)        
 
         if sernumerica == 0:
@@ -82,7 +87,7 @@ def get_timeseries(**args):
 
         df_serie["VALVALOR"] = df_serie["VALVALOR"].astype("float")
         df_serie["DESCVALOR"] = df_serie["DESCVALOR"].astype("str")
-        df_serie["VALDATA"] = df_serie["VALDATA"].astype('datetime64[ns]')
+        #df_serie["VALDATA"] = df_serie["VALDATA"].astype('datetime64[ns]')
 
         with client.open(save_path, 'wb') as f:        
             df_serie.to_parquet(f)
@@ -121,6 +126,7 @@ def save_timeseries(**args):
     df = df.withColumn("DESCVALOR", F.when(F.col("DESCVALOR") == "nan", None).otherwise(F.col("DESCVALOR")))
     df = df.withColumn("NIVNOME", F.when(F.col("NIVNOME") == "", None).otherwise(F.col("NIVNOME")))
     df = df.withColumn("TERCODIGO", F.when(F.col("TERCODIGO") == "", None).otherwise(F.col("TERCODIGO")))
+    df = df.withColumn("VALDATA", F.col("VALDATA").cast("date"))
 
     print("Save table ", name_tema)
     table = "{}.{}{}".format(database_schema,"timeserie_", name_tema)
