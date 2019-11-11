@@ -36,6 +36,7 @@ services:
     restart: unless-stopped
     volumes:
       - /mnt/airflow/dags:/home/engineer/dags:z #(2)
+      - /home/airflow/logs:/home/engineer/logs:z #(2)
     image: ipea-data-worker #(3)
 
 networks:
