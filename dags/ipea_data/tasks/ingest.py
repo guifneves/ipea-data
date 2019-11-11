@@ -66,13 +66,23 @@ def get_timeseries(**args):
 
         sercodigo = code[0]
         temcodigo = code[1]
+        sernumerica = code[2]
         
         df_serie = ipea.get_serie(sercodigo)        
-        df_serie = df_serie.drop('SERCODIGO', 1)
-        df_serie["VALVALOR"] = df_serie["VALVALOR"].astype("str")
+        df_serie = df_serie.drop('SERCODIGO', 1)        
+
+        if sernumerica == 0:
+            df_serie["DESCVALOR"] = df_serie["VALVALOR"]
+            df_serie["VALVALOR"] = pd.np.nan
+        else:
+            df_serie["DESCVALOR"] = pd.np.nan
 
         ref_date = datetime.now().strftime("%Y%m%d")
         save_path = "{}TEMCODIGO={}/REF_DATE={}/SERCODIGO={}/{}.parquet".format(save_path, temcodigo, ref_date, sercodigo, sercodigo)
+
+        df_serie["VALVALOR"] = df_serie["VALVALOR"].astype("float")
+        df_serie["DESCVALOR"] = df_serie["DESCVALOR"].astype("str")
+        df_serie["VALDATA"] = df_serie["VALDATA"].astype('datetime64[ns]')
 
         with client.open(save_path, 'wb') as f:        
             df_serie.to_parquet(f)
@@ -87,7 +97,7 @@ def get_timeseries(**args):
     df_md = spark.read.format("parquet").load(args["source_path"]).filter((F.col("REF_DATE") == current_date) & F.col("TEMCODIGO").isin([cod_temas]))    
 
     #df_md = df_md.limit(5)
-    codes = list(map(lambda i: [i.SERCODIGO,i.TEMCODIGO], df_md.select("SERCODIGO", "TEMCODIGO").distinct().collect()))
+    codes = list(map(lambda i: [i.SERCODIGO,i.TEMCODIGO, i.SERNUMERICA], df_md.select("SERCODIGO", "TEMCODIGO", "SERNUMERICA").distinct().collect()))
   
     client, path = adl.get_adl_client(args["save_path"])
     spark.sparkContext.parallelize(codes).map(lambda x: get_from_ipea(x, client, path)).collect()
@@ -108,14 +118,9 @@ def save_timeseries(**args):
 
     print("Transformations") 
     df = df.withColumn("VALVALOR", F.when(F.col("VALVALOR") == "nan", None).otherwise(F.col("VALVALOR")))
+    df = df.withColumn("DESCVALOR", F.when(F.col("DESCVALOR") == "nan", None).otherwise(F.col("DESCVALOR")))
     df = df.withColumn("NIVNOME", F.when(F.col("NIVNOME") == "", None).otherwise(F.col("NIVNOME")))
     df = df.withColumn("TERCODIGO", F.when(F.col("TERCODIGO") == "", None).otherwise(F.col("TERCODIGO")))
-    df = df.withColumn("VALDATA", F.col("VALDATA").cast("date"))
-
-    if cod_tema not in [54, 55, 56, 57, 58, 59, 60]:
-        print("Cast value to double")
-        df = df.withColumn("VALVALOR", F.col("VALVALOR").cast("double"))
-    
 
     print("Save table ", name_tema)
     table = "{}.{}{}".format(database_schema,"timeserie_", name_tema)
@@ -132,14 +137,16 @@ def save_relationship_table(**args):
     
     temas =\
         [
-            [1, 'producao'], [2, 'consumo_e_vendas'], [3, 'moeda_e_credito'], [5, 'comercio_exterior'], [6, 'financas_publicas'], [7, 'cambio'],
-            [8, 'contas_nacionais'], [9, 'precos'], [10, 'balanco_de_pagamentos'], [11, 'economia_internacional'], [12, 'emprego'], [13, 'salario_e_renda'],
-            [14, 'populacao'], [15, 'indicadores_sociais'], [16, 'projecoes'], [17, 'sinopse_macroeconomica'], [19, 'estoque_de_capital'],
-            [20, 'seguranca_publica'], [23, 'assistencia_social'], [24, 'correcao_monetaria'], [26, 'vendas'], [27, 'percepcao_e_expectativa'],
-            [28, 'agropecuaria'], [29, 'educacao'], [30, 'renda'], [31, 'habitacao'], [32, 'geografico'], [33, 'transporte'], [37, 'demografia'],
-            [38, 'desenvolvimento_humano'], [39, 'financeiras'], [40, 'mercado_de_trabalho'], [41, 'saude'], [54, 'deputado_estadual'],
-            [55, 'deputado_federal'], [56, 'governador'], [57, 'prefeito'], [58, 'presidente'], [59, 'senador'], [60, 'vereador'], [63, 'eleitorado'],
-            [79, 'idhm2000'], [81, 'contas_regionais']
+            [1, 'timeserie_producao'], [2, 'timeserie_consumo_e_vendas'], [3, 'timeserie_moeda_e_credito'], [5, 'timeserie_comercio_exterior'], 
+            [6, 'timeserie_financas_publicas'], [7, 'timeserie_cambio'], [8, 'timeserie_contas_nacionais'], [9, 'timeserie_precos'], [10, 'timeserie_balanco_de_pagamentos'], 
+            [11, 'timeserie_economia_internacional'], [12, 'timeserie_emprego'], [13, 'timeserie_salario_e_renda'], [14, 'timeserie_populacao'], 
+            [15, 'timeserie_indicadores_sociais'], [16, 'timeserie_projecoes'], [17, 'timeserie_sinopse_macroeconomica'], [19, 'timeserie_estoque_de_capital'],
+            [20, 'timeserie_seguranca_publica'], [23, 'timeserie_assistencia_social'], [24, 'timeserie_correcao_monetaria'], [26, 'timeserie_vendas'], 
+            [27, 'timeserie_percepcao_e_expectativa'], [28, 'timeserie_agropecuaria'], [29, 'timeserie_educacao'], [30, 'timeserie_renda'], [31, 'timeserie_habitacao'], 
+            [32, 'timeserie_geografico'], [33, 'timeserie_transporte'], [37, 'timeserie_demografia'], [38, 'timeserie_desenvolvimento_humano'], 
+            [39, 'timeserie_financeiras'], [40, 'timeserie_mercado_de_trabalho'], [41, 'timeserie_saude'], [54, 'timeserie_deputado_estadual'],
+            [55, 'timeserie_deputado_federal'], [56, 'timeserie_governador'], [57, 'timeserie_prefeito'], [58, 'timeserie_presidente'], [59, 'timeserie_senador'], 
+            [60, 'timeserie_vereador'], [63, 'timeserie_eleitorado'], [79, 'timeserie_idhm2000'], [81, 'timeserie_contas_regionais']
         ]
 
     df_temas = spark.createDataFrame(temas,["TEMCODIGO", "TEMNOME"]) 
@@ -155,5 +162,5 @@ def save_relationship_table(**args):
 
 
     print("Save table relationship")
-    table = "{}.{}".format(database_schema, args["table"],)
+    table = "{}.{}".format(database_schema, args["table"])
     df.write.jdbc(url=jdbc_url, table=table, mode='overwrite', properties=connection_properties)

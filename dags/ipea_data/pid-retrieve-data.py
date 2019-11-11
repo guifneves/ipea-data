@@ -18,7 +18,9 @@ default_args = {
     'depends_on_past': False,
     "email": ["guilherme.neves@raizen.com"],
     "email_on_failure": True,
-    "email_on_retry": False
+    "email_on_retry": False,
+    'retries': 5,
+    'retry_delay': timedelta(minutes=2)
 }
 
 dag = DAG(
