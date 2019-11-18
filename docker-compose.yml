@@ -20,7 +20,7 @@ services:
     container_name: postgres
 
   webserver:
-    image: airflow_webserver:latest
+    image: rzldt.azurecr.io/airzflow:latest
     environment:
       - POSTGRES_HOST
       - POSTGRES_PORT
@@ -44,7 +44,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   scheduler:
-    image: airflow_webserver:latest
+    image: rzldt.azurecr.io/airzflow:latest
     environment:
       - POSTGRES_HOST
       - POSTGRES_PORT
@@ -66,7 +66,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   worker:
-    image: airflow_webserver:latest
+    image: rzldt.azurecr.io/airzflow:latest
     environment:
       - POSTGRES_HOST
       - POSTGRES_PORT
@@ -88,7 +88,7 @@ services:
       - ./logs:/home/engineer/logs:z
       - /var/run/docker.sock:/var/run/docker.sock:ro
   flower:
-    image: airflow_webserver:latest
+    image: rzldt.azurecr.io/airzflow:latest
     environment:
       - POSTGRES_HOST
       - POSTGRES_PORT
