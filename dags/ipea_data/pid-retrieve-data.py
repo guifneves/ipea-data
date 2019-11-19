@@ -11,7 +11,6 @@ ADL = 'raizenprd01'
 dag_id = 'PID-retrieve_ipea_data'
 workdir = "ldt_dev/sandbox/lbarbosa"
 worker_queue = "ipea-data-worker-queue"
-pool = "pool_ipea"
 
 default_args = {
     'owner': 'Projeto IPEA Data',
@@ -583,7 +582,6 @@ get_timeseries_vereador = PythonOperator(
 save_timeseries_agropecuaria = PythonOperator(
     task_id = "save_timeseries_agropecuaria",
     python_callable = ingest.save_timeseries,
-    pool = pool,
     op_kwargs = {
         'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),        
         'cod_tema': 28,
@@ -596,7 +594,6 @@ save_timeseries_agropecuaria = PythonOperator(
 save_timeseries_financas_publicas = PythonOperator(
     task_id = "save_timeseries_financas_publicas",
     python_callable = ingest.save_timeseries,
-    pool = pool,
     op_kwargs = {
         'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
         'cod_tema': 6,
@@ -609,7 +606,6 @@ save_timeseries_financas_publicas = PythonOperator(
 save_timeseries_seguranca_publica = PythonOperator(
     task_id = "save_timeseries_seguranca_publica",
     python_callable = ingest.save_timeseries,
-    pool = pool,
     op_kwargs = {
         'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
         'cod_tema': 20,
