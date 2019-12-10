@@ -35,7 +35,8 @@ dag = DAG(
 sensor_wait_ipea_metadata = ExternalTaskSensor(
     task_id = 'sensor_wait_ipea_metadata',
     external_dag_id = 'PID-retrieve_ipea_metadata',
-    external_task_id = 'clear_timeseries',
+    external_task_id = 'finish_download',
+    queue = worker_queue,
     dag = dag
 )
 
@@ -1039,3 +1040,4 @@ sensor_wait_ipea_metadata >> get_timeseries_sinopse_macroeconomica >> save_times
 sensor_wait_ipea_metadata >> get_timeseries_transporte >> save_timeseries_transporte
 sensor_wait_ipea_metadata >> get_timeseries_vendas >> save_timeseries_vendas
 sensor_wait_ipea_metadata >> get_timeseries_vereador >> save_timeseries_vereador
+

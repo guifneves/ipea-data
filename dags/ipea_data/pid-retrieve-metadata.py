@@ -2,6 +2,7 @@ import airflow
 from airflow import DAG
 from datetime import datetime, timedelta
 from airflow.operators.python_operator import PythonOperator
+from airflow.operators.dummy_operator import DummyOperator
 
 import raizenlib.utils.adl as adl
 import ipea_data.tasks.ingest as ingest
@@ -29,6 +30,12 @@ dag = DAG(
     schedule_interval="0 15 * * *",
     max_active_runs=1,
     concurrency = 4
+)
+
+start_download = DummyOperator(
+    task_id="start_download",
+    queue = worker_queue,
+    dag = dag
 )
 
 ## Metadados
@@ -141,20 +148,17 @@ save_fontes = PythonOperator(
     dag = dag
 )
 
-clear_timeseries = PythonOperator(
-    task_id = "clear_timeseries",
-    python_callable = ingest.clear_timeseries,
-    op_kwargs = {
-        'source_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/')
-    },
+finish_download = DummyOperator(
+    task_id="finish_download",
     queue = worker_queue,
     dag = dag
 )
 
+
+start_download >> [get_metadados,get_territorios,get_temas,get_paises,get_fontes]
 get_metadados >> save_metadados 
 get_territorios >> save_territorios 
 get_temas >> save_temas 
 get_paises >> save_paises 
 get_fontes >> save_fontes
-clear_timeseries
-
+[save_metadados,save_territorios,save_temas,save_paises,save_fontes] >> finish_download

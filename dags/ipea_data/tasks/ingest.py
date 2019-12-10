@@ -231,7 +231,12 @@ def get_timeseries(**args):
             df_serie["DESCVALOR"] = pd.np.nan
 
         ref_date = datetime.now().strftime("%Y%m%d")
-        save_path = "{}TEMCODIGO={}/REF_DATE={}/SERCODIGO={}/{}.parquet".format(save_path, temcodigo, ref_date, sercodigo, sercodigo)
+        
+        remove_path = "{}TEMCODIGO={}/SERCODIGO={}".format(save_path, temcodigo, sercodigo)
+        if client.exists(remove_path):
+            client.rm(remove_path, recursive=True)
+        
+        save_path = "{}TEMCODIGO={}/SERCODIGO={}/REF_DATE={}/{}.parquet".format(save_path, temcodigo, sercodigo, ref_date, sercodigo)        
 
         df_serie["VALVALOR"] = df_serie["VALVALOR"].astype("float")
         df_serie["DESCVALOR"] = df_serie["DESCVALOR"].astype("str")
@@ -290,7 +295,3 @@ def save_timeseries(**args):
     print("Save table ", name_tema)
     table = "{}.{}{}".format(database_schema,"timeserie_", name_tema)
     df.write.jdbc(url=jdbc_url, table=table, mode='overwrite', properties=connection_properties)
-
-
-def clear_timeseries(**args):
-    adl.remove_on_adl(args["source_path"])
