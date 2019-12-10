@@ -37,7 +37,7 @@ dag = DAG(
 
 start_download = DummyOperator(
     task_id="start_download",
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -151,19 +151,9 @@ save_fontes = PythonOperator(
     dag = dag
 )
 
-<<<<<<< HEAD
-clear_timeseries = PythonOperator(
-    task_id = "clear_timeseries",
-    python_callable = ingest.clear_timeseries,
-    op_kwargs = {
-        'source_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/')
-    },
-    executor_config=executor_config,
-=======
 finish_download = DummyOperator(
     task_id="finish_download",
-    queue = worker_queue,
->>>>>>> origin/develop
+    executor_config=executor_config,
     dag = dag
 )
 
