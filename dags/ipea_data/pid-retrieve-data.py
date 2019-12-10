@@ -10,7 +10,7 @@ import ipea_data.tasks.ingest as ingest
 
 ADL = 'raizenprd01'
 dag_id = 'PID-retrieve_ipea_data'
-workdir = "ldt_dev/sandbox/lbarbosa"
+workdir = "ldt_dev/projetos/ipea_data"
 worker_queue = "ipea-data-worker-queue"
 
 default_args = {
@@ -36,7 +36,7 @@ dag = DAG(
 sensor_wait_ipea_metadata = ExternalTaskSensor(
     task_id = 'sensor_wait_ipea_metadata',
     external_dag_id = 'PID-retrieve_ipea_metadata',
-    external_task_id = 'clear_timeseries',
+    external_task_id = 'finish_download',
     dag = dag
 )
 
@@ -44,8 +44,8 @@ get_timeseries_agropecuaria = PythonOperator(
     task_id = "get_timeseries_agropecuaria",
     python_callable = ingest.get_timeseries,
     op_kwargs = {
-        'source_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/metadados/'),
-        'save_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
+        'source_path': adl.adl_full_url(ADL, workdir + '/trusted/metadados/'),
+        'save_path': adl.adl_full_url(ADL, workdir + '/trusted/series/'),
         'cod_tema': '28'
     },
     queue = worker_queue,
@@ -56,8 +56,8 @@ get_timeseries_financas_publicas = PythonOperator(
     task_id = "get_timeseries_financas_publicas",
     python_callable = ingest.get_timeseries,
     op_kwargs = {
-        'source_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/metadados/'),
-        'save_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
+        'source_path': adl.adl_full_url(ADL, workdir + '/trusted/metadados/'),
+        'save_path': adl.adl_full_url(ADL, workdir + '/trusted/series/'),
         'cod_tema': '6'
     },
     queue = worker_queue,
@@ -68,8 +68,8 @@ get_timeseries_seguranca_publica = PythonOperator(
     task_id = "get_timeseries_seguranca_publica",
     python_callable = ingest.get_timeseries,
     op_kwargs = {
-        'source_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/metadados/'),
-        'save_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
+        'source_path': adl.adl_full_url(ADL, workdir + '/trusted/metadados/'),
+        'save_path': adl.adl_full_url(ADL, workdir + '/trusted/series/'),
         'cod_tema': '20'
     },
     queue = worker_queue,
@@ -80,7 +80,7 @@ save_timeseries_agropecuaria = PythonOperator(
     task_id = "save_timeseries_agropecuaria",
     python_callable = ingest.save_timeseries,
     op_kwargs = {
-        'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),        
+        'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/series/'),        
         'cod_tema': 28,
         'name_tema': 'agropecuaria'
     },
@@ -92,7 +92,7 @@ save_timeseries_financas_publicas = PythonOperator(
     task_id = "save_timeseries_financas_publicas",
     python_callable = ingest.save_timeseries,
     op_kwargs = {
-        'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
+        'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/series/'),
         'cod_tema': 6,
         'name_tema': 'financas_publicas'
     },
@@ -104,7 +104,7 @@ save_timeseries_seguranca_publica = PythonOperator(
     task_id = "save_timeseries_seguranca_publica",
     python_callable = ingest.save_timeseries,
     op_kwargs = {
-        'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
+        'source_path_series': adl.adl_full_url(ADL, workdir + '/trusted/series/'),
         'cod_tema': 20,
         'name_tema': 'seguranca_publica'
     },
