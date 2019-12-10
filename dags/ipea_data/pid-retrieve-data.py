@@ -39,6 +39,7 @@ sensor_wait_ipea_metadata = ExternalTaskSensor(
     task_id = 'sensor_wait_ipea_metadata',
     external_dag_id = 'PID-retrieve_ipea_metadata',
     external_task_id = 'finish_download',
+    queue = worker_queue,
     dag = dag
 )
 
