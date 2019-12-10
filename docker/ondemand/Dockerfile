@@ -52,8 +52,8 @@ ENV SPARK_OPTS "--driver-java-options=-Xms1024M --driver-java-options=-Xmx4096M 
 
 
 RUN pip install pyspark==2.3.1
-RUN pip install findspark==0.14.1
-RUN pip install pyarrow
+RUN pip install findspark
+RUN pip install pyarrow==0.14.1
 
 USER engineer
 WORKDIR /home/engineer/
