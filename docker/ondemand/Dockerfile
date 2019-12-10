@@ -1,4 +1,4 @@
-FROM rzldt.azurecr.io/airzflow:latest
+FROM raizenanalyticsdev.azurecr.io/airflow-base:latest
 
 RUN pip install --user apache-airflow[hive,jdbc]
 

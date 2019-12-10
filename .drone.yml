@@ -1,201 +1,45 @@
 kind: pipeline
+type: kubernetes
 name: default
 
 steps:
-#- name: integrity_test
-#  image: rzldt.azurecr.io/airzflow_test:latest
-#  commands:
-#    - echo DAGs Integrity Test
-    #- airflow initdb
-    #- cp --recursive /drone/src/dags /home/engineer/dags
-    #- cd /home/engineer
-    #- pytest -v --cov=/drone/src/dags --cov-report=term-missing -W ignore::DeprecationWarning --html=/drone/reports/report.html --self-contained-html /drone/src/dags/tests
-#  volumes:
-#    - name: docker
-#      path: /var/run/docker.sock
-#    - name: report
-#      path: /drone/reports
-#   image: plugins/gh-pages
-#   settings:
-#     username: 
-#       from_secret: GITHUB_USER
-#     password:
-#       from_secret: GITHUB_PASSWORD
-#     pages_directory: docs/build/html
-#   when:
-#     branch:
-#     - master
-#     event:
-#       exclude:
-#       - pull_request
-- name: deploy_worker_qas
-  image: docker/compose:1.24.1
-  commands:
-    - apk add openssh
-    - mkdir /root/.ssh
-    - echo "$SSH_KEY" > /root/.ssh/id_rsa
-    - chmod 600 /root/.ssh/id_rsa
-    - echo "$SSH_HOST" > /root/.ssh/known_hosts
-    - chmod 600 /root/.ssh/known_hosts
-    - export DOCKER_HOST=$BASE_WORKER_QAS_HOST
-    - echo Deploying Worker Projeto Compana QAS
-    - docker-compose -f ./docker/ondemand/docker-compose.yml build
-    - docker-compose -f ./docker/ondemand/docker-compose.yml up --build --detach --force-recreate
-  volumes:
-    - name: docker
-      path: /var/run/docker.sock
-  environment:
-    POSTGRES_HOST:
-      from_secret: POSTGRES_QAS_HOST
-    POSTGRES_PORT:
-      from_secret: POSTGRES_PORT
-    POSTGRES_USER:
-      from_secret: POSTGRES_QAS_USER
-    POSTGRES_PASSWORD:
-      from_secret: POSTGRES_QAS_PASSWORD
-    POSTGRES_DB:
-      from_secret: POSTGRES_DB
-    REDIS_HOST:
-      from_secret: REDIS_QAS_HOST
-    REDIS_PORT:
-      from_secret: REDIS_PORT
-    REDIS_PASSWORD:
-      from_secret: REDIS_QAS_PASSWORD
-    FERNET_KEY:
-      from_secret: FERNET_KEY
-    BASE_WORKER_QAS_HOST:
-      from_secret: BASE_WORKER_QAS_HOST
-    SSH_KEY:
-      from_secret: SSH_KEY
-    SSH_HOST:
-      from_secret: SSH_HOST
-    REMOTE_BASE_LOG_FOLDER:
-      from_secret: REMOTE_BASE_LOG_FOLDER_QAS
-    MEMCACHE_HOST:
-      from_secret: MEMCACHE_QAS_HOST
-    MEMCACHE_PORT:
-      from_secret: MEMCACHE_PORT
-  when:
-    branch:
-    - develop
-    event:
-      exclude:
-      - pull_request
-- name: deploy_dags_qas
-  image: python:3
-  commands:
-    - echo Deploying DAGs 
-    - rm --force --recursive /dags/ipea_data
-    - cp --recursive /drone/src/dags/ipea_data /dags/ipea_data
-  volumes:
-     - name: dags_qa
-       path: /dags
-  when:
-    branch:
-    - develop
-    event:
-      exclude:
-        - pull_request
-- name: deploy_worker_prd
-  image: docker/compose:1.24.1
-  commands:
-    - apk add openssh
-    - mkdir /root/.ssh
-    - echo "$SSH_KEY" > /root/.ssh/id_rsa
-    - chmod 600 /root/.ssh/id_rsa
-    - echo "$SSH_HOST" > /root/.ssh/known_hosts
-    - chmod 600 /root/.ssh/known_hosts
-    - export DOCKER_HOST=$BASE_WORKER_PRD_HOST
-    - echo Deploying Worker AutoSugar PRD
-    - docker-compose -f ./docker/ondemand/docker-compose.yml build
-    - docker-compose -f ./docker/ondemand/docker-compose.yml up --build --detach --force-recreate
-  volumes:
-    - name: docker
-      path: /var/run/docker.sock
-  environment:
-    POSTGRES_HOST:
-      from_secret: POSTGRES_PRD_HOST
-    POSTGRES_PORT:
-      from_secret: POSTGRES_PORT
-    POSTGRES_USER:
-      from_secret: POSTGRES_PRD_USER
-    POSTGRES_PASSWORD:
-      from_secret: POSTGRES_PRD_PASSWORD
-    POSTGRES_DB:
-      from_secret: POSTGRES_DB
-    REDIS_HOST:
-      from_secret: REDIS_PRD_HOST
-    REDIS_PORT:
-      from_secret: REDIS_PORT
-    REDIS_PASSWORD:
-      from_secret: REDIS_PRD_PASSWORD
-    FERNET_KEY:
-      from_secret: FERNET_KEY
-    BASE_WORKER_PRD_HOST:
-      from_secret: BASE_WORKER_PRD_HOST
-    SSH_KEY:
-      from_secret: SSH_KEY
-    SSH_HOST:
-      from_secret: SSH_HOST
-    REMOTE_BASE_LOG_FOLDER:
-      from_secret: REMOTE_BASE_LOG_FOLDER_PRD
-    MEMCACHE_HOST:
-      from_secret: MEMCACHE_PRD_HOST
-    MEMCACHE_PORT:
-      from_secret: MEMCACHE_PORT
-  when:
-    branch:
-    - master
-    event:
-      exclude:
-      - pull_request
 - name: deploy_dags_prd
-  image: python:3
+  image: bash
+  privileged: true
+  environment:
+    SHARE_NAME: //raizendevstorage.file.core.windows.net/airflow/dags
+    MOUNT_DIR: dags_dir
+    SHARE_USERNAME: raizendevstorage
+    SHARE_PASSWORD:
+      from_secret: azure-storage-key  
   commands:
-    - echo Deploying DAGs 
-    - rm --force --recursive /dags/ipea_data
-    - cp --recursive /drone/src/dags/ipea_data /dags/ipea_data
-  volumes:
-     - name: dag_prd
-       path: /dags
+    - echo Deploying DAGs
+    - mkdir $MOUNT_DIR
+    - >
+      mount -t cifs $SHARE_NAME $MOUNT_DIR -o 
+      vers=3.0,username=$SHARE_USERNAME,password=$SHARE_PASSWORD,dir_mode=0777,file_mode=0777,serverino
+    - rm -rf $MOUNT_DIR/ipea_data
+    - cp --recursive /drone/src/dags/ipea_data $MOUNT_DIR/ipea_data
   when:
     branch:
-    - master
+    - dev-kubernetes
     event:
       exclude:
         - pull_request
-- name: failure_notify
-  image: drillster/drone-email
+        - tag
+        
+- name: publish-image
+  image: banzaicloud/drone-kaniko
   settings:
-    host: 
-      from_secret: DRONE_SMTP_HOST
-    port:
-      from_secret: DRONE_SMTP_PORT
-    username: 
-      from_secret: DRONE_EMAIL
-    password:  
-      from_secret: DRONE_PASSWORD
-    from: 
-      from_secret: DRONE_EMAIL
-    attachment: /drone/reports/report.html
-  volumes:
-    - name: docker
-      path: /var/run/docker.sock
-    - name: report
-      path: /drone/reports
+    registry: raizenanalyticsdev.azurecr.io
+    repo: ipea-data
+    auto_tag: true
+    username: raizenanalyticsdev
+    password:
+      from_secret: azure-registry-key
+    context: /drone/src/docker/ondemand/
   when:
-    status: [ failure ]
-
-volumes:
-- name: dags_qa
-  host:
-    path: /mnt/airflow-qa/dags
-- name: dag_prd
-  host:
-    path: /mnt/airflow-prd/dags
-- name: docker
-  host:
-    path: /var/run/docker.sock
-- name: report
-  host:
-    path: /home/droneafadm/reports
+    branch:
+    - dev-kubernetes
+    event:
+      - tag

@@ -11,7 +11,9 @@ import ipea_data.tasks.ingest as ingest
 ADL = 'raizenprd01'
 dag_id = 'PID-retrieve_ipea_data'
 workdir = "ldt_dev/sandbox/lbarbosa"
-worker_queue = "ipea-data-worker-queue"
+# worker_queue = "ipea-data-worker-queue"
+
+executor_config={ 'KubernetesExecutor' : { 'image' : 'raizenanalyticsdev.azurecr.io/ipea-data:1.0.0' }}
 
 default_args = {
     'owner': 'Projeto IPEA Data',
@@ -48,7 +50,7 @@ get_timeseries_agropecuaria = PythonOperator(
         'save_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
         'cod_tema': '28'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -60,7 +62,7 @@ get_timeseries_financas_publicas = PythonOperator(
         'save_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
         'cod_tema': '6'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -72,7 +74,7 @@ get_timeseries_seguranca_publica = PythonOperator(
         'save_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
         'cod_tema': '20'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -84,7 +86,7 @@ save_timeseries_agropecuaria = PythonOperator(
         'cod_tema': 28,
         'name_tema': 'agropecuaria'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -96,7 +98,7 @@ save_timeseries_financas_publicas = PythonOperator(
         'cod_tema': 6,
         'name_tema': 'financas_publicas'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -108,7 +110,7 @@ save_timeseries_seguranca_publica = PythonOperator(
         'cod_tema': 20,
         'name_tema': 'seguranca_publica'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 

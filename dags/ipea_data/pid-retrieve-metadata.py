@@ -9,7 +9,9 @@ import ipea_data.tasks.ingest as ingest
 ADL = 'raizenprd01'
 dag_id = 'PID-retrieve_ipea_metadata'
 workdir = "ldt_dev/sandbox/lbarbosa"
-worker_queue = "ipea-data-worker-queue"
+# worker_queue = "ipea-data-worker-queue"
+
+executor_config={ 'KubernetesExecutor' : { 'image' : 'raizenanalyticsdev.azurecr.io/ipea-data:1.0.0' }}
 
 default_args = {
     'owner': 'Projeto IPEA Data',
@@ -38,7 +40,7 @@ get_metadados = PythonOperator(
     op_kwargs = {
         'save_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/metadados/')
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -49,7 +51,7 @@ save_metadados = PythonOperator(
         'source_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/metadados/'),
         'table_name': 'metadados'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -60,7 +62,7 @@ get_territorios = PythonOperator(
     op_kwargs = {
         'save_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/territorios/')
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -71,7 +73,7 @@ save_territorios = PythonOperator(
         'source_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/territorios/'),
         'table_name': 'territorios'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -82,7 +84,7 @@ get_temas = PythonOperator(
     op_kwargs = {
         'save_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/temas/')
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -93,7 +95,7 @@ save_temas = PythonOperator(
         'source_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/temas/'),
         'table_name': 'temas'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -104,7 +106,7 @@ get_paises = PythonOperator(
     op_kwargs = {
         'save_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/paises/')
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -115,7 +117,7 @@ save_paises = PythonOperator(
         'source_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/paises/'),
         'table_name': 'paises'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -126,7 +128,7 @@ get_fontes = PythonOperator(
     op_kwargs = {
         'save_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/fontes/')
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -137,7 +139,7 @@ save_fontes = PythonOperator(
         'source_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/fontes/'),
         'table_name': 'fontes'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -147,7 +149,7 @@ clear_timeseries = PythonOperator(
     op_kwargs = {
         'source_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/')
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 

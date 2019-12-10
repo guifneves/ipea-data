@@ -10,7 +10,9 @@ import ipea_data.tasks.ingest as ingest
 ADL = 'raizenprd01'
 dag_id = 'PID-retrieve_ipea_data_parallel'
 workdir = "ldt_dev/sandbox/lbarbosa"
-worker_queue = "ipea-data-worker-queue"
+# worker_queue = "ipea-data-worker-queue"
+
+executor_config={ 'KubernetesExecutor' : { 'image' : 'raizenanalyticsdev.azurecr.io/ipea-data:1.0.0' }}
 
 default_args = {
     'owner': 'Projeto IPEA Data',
@@ -47,7 +49,7 @@ get_timeseries_assistencia_social = PythonOperator(
         'save_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
         'cod_tema': '23'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -59,7 +61,7 @@ get_timeseries_balanco_de_pagamentos = PythonOperator(
         'save_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
         'cod_tema': '10'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -71,7 +73,7 @@ get_timeseries_cambio = PythonOperator(
         'save_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
         'cod_tema': '7'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -83,7 +85,7 @@ get_timeseries_comercio_exterior = PythonOperator(
         'save_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
         'cod_tema': '5'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -95,7 +97,7 @@ get_timeseries_consumo_e_vendas = PythonOperator(
         'save_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
         'cod_tema': '2'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -107,7 +109,7 @@ get_timeseries_contas_nacionais = PythonOperator(
         'save_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
         'cod_tema': '8'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -119,7 +121,7 @@ get_timeseries_contas_regionais = PythonOperator(
         'save_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
         'cod_tema': '81'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -131,7 +133,7 @@ get_timeseries_correcao_monetaria = PythonOperator(
         'save_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
         'cod_tema': '24'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -143,7 +145,7 @@ get_timeseries_demografia = PythonOperator(
         'save_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
         'cod_tema': '37'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -155,7 +157,7 @@ get_timeseries_deputado_estadual = PythonOperator(
         'save_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
         'cod_tema': '54'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -167,7 +169,7 @@ get_timeseries_deputado_federal = PythonOperator(
         'save_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
         'cod_tema': '55'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -179,7 +181,7 @@ get_timeseries_desenvolvimento_humano = PythonOperator(
         'save_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
         'cod_tema': '38'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -191,7 +193,7 @@ get_timeseries_economia_internacional = PythonOperator(
         'save_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
         'cod_tema': '11'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -203,7 +205,7 @@ get_timeseries_educacao = PythonOperator(
         'save_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
         'cod_tema': '29'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -215,7 +217,7 @@ get_timeseries_eleitorado = PythonOperator(
         'save_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
         'cod_tema': '63'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -227,7 +229,7 @@ get_timeseries_emprego = PythonOperator(
         'save_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
         'cod_tema': '12'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -239,7 +241,7 @@ get_timeseries_estoque_de_capital = PythonOperator(
         'save_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
         'cod_tema': '19'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -251,7 +253,7 @@ get_timeseries_financeiras = PythonOperator(
         'save_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
         'cod_tema': '39'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -263,7 +265,7 @@ get_timeseries_geografico = PythonOperator(
         'save_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
         'cod_tema': '32'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -275,7 +277,7 @@ get_timeseries_governador = PythonOperator(
         'save_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
         'cod_tema': '56'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -287,7 +289,7 @@ get_timeseries_habitacao = PythonOperator(
         'save_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
         'cod_tema': '31'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -299,7 +301,7 @@ get_timeseries_idhm2000 = PythonOperator(
         'save_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
         'cod_tema': '79'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -311,7 +313,7 @@ get_timeseries_indicadores_sociais = PythonOperator(
         'save_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
         'cod_tema': '15'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -323,7 +325,7 @@ get_timeseries_mercado_de_trabalho = PythonOperator(
         'save_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
         'cod_tema': '40'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -335,7 +337,7 @@ get_timeseries_moeda_e_credito = PythonOperator(
         'save_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
         'cod_tema': '3'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -347,7 +349,7 @@ get_timeseries_percepcao_e_expectativa = PythonOperator(
         'save_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
         'cod_tema': '27'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -359,7 +361,7 @@ get_timeseries_populacao = PythonOperator(
         'save_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
         'cod_tema': '14'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -371,7 +373,7 @@ get_timeseries_precos = PythonOperator(
         'save_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
         'cod_tema': '9'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -383,7 +385,7 @@ get_timeseries_prefeito = PythonOperator(
         'save_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
         'cod_tema': '57'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -395,7 +397,7 @@ get_timeseries_presidente = PythonOperator(
         'save_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
         'cod_tema': '58'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -407,7 +409,7 @@ get_timeseries_producao = PythonOperator(
         'save_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
         'cod_tema': '1'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -419,7 +421,7 @@ get_timeseries_projecoes = PythonOperator(
         'save_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
         'cod_tema': '16'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -431,7 +433,7 @@ get_timeseries_renda = PythonOperator(
         'save_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
         'cod_tema': '30'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -443,7 +445,7 @@ get_timeseries_salario_e_renda = PythonOperator(
         'save_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
         'cod_tema': '13'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -455,7 +457,7 @@ get_timeseries_saude = PythonOperator(
         'save_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
         'cod_tema': '41'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -467,7 +469,7 @@ get_timeseries_senador = PythonOperator(
         'save_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
         'cod_tema': '59'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -479,7 +481,7 @@ get_timeseries_sinopse_macroeconomica = PythonOperator(
         'save_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
         'cod_tema': '17'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -491,7 +493,7 @@ get_timeseries_transporte = PythonOperator(
         'save_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
         'cod_tema': '33'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -503,7 +505,7 @@ get_timeseries_vendas = PythonOperator(
         'save_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
         'cod_tema': '26'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -515,7 +517,7 @@ get_timeseries_vereador = PythonOperator(
         'save_path': adl.adl_full_url(ADL, workdir + '/trusted/ipea_data/series/'),
         'cod_tema': '60'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -527,7 +529,7 @@ save_timeseries_assistencia_social = PythonOperator(
         'cod_tema': 23,
         'name_tema': 'assistencia_social'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -539,7 +541,7 @@ save_timeseries_balanco_de_pagamentos = PythonOperator(
         'cod_tema': 10,
         'name_tema': 'balanco_de_pagamentos'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -551,7 +553,7 @@ save_timeseries_cambio = PythonOperator(
         'cod_tema': 7,
         'name_tema': 'cambio'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -563,7 +565,7 @@ save_timeseries_comercio_exterior = PythonOperator(
         'cod_tema': 5,
         'name_tema': 'comercio_exterior'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -575,7 +577,7 @@ save_timeseries_consumo_e_vendas = PythonOperator(
         'cod_tema': 2,
         'name_tema': 'consumo_e_vendas'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -587,7 +589,7 @@ save_timeseries_contas_nacionais = PythonOperator(
         'cod_tema': 8,
         'name_tema': 'contas_nacionais'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -599,7 +601,7 @@ save_timeseries_contas_regionais = PythonOperator(
         'cod_tema': 81,
         'name_tema': 'contas_regionais'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -611,7 +613,7 @@ save_timeseries_correcao_monetaria = PythonOperator(
         'cod_tema': 24,
         'name_tema': 'correcao_monetaria'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -623,7 +625,7 @@ save_timeseries_demografia = PythonOperator(
         'cod_tema': 37,
         'name_tema': 'demografia'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -635,7 +637,7 @@ save_timeseries_deputado_estadual = PythonOperator(
         'cod_tema': 54,
         'name_tema': 'deputado_estadual'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -647,7 +649,7 @@ save_timeseries_deputado_federal = PythonOperator(
         'cod_tema': 55,
         'name_tema': 'deputado_federal'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -659,7 +661,7 @@ save_timeseries_desenvolvimento_humano = PythonOperator(
         'cod_tema': 38,
         'name_tema': 'desenvolvimento_humano'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -671,7 +673,7 @@ save_timeseries_economia_internacional = PythonOperator(
         'cod_tema': 11,
         'name_tema': 'economia_internacional'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -683,7 +685,7 @@ save_timeseries_educacao = PythonOperator(
         'cod_tema': 29,
         'name_tema': 'educacao'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -695,7 +697,7 @@ save_timeseries_eleitorado = PythonOperator(
         'cod_tema': 63,
         'name_tema': 'eleitorado'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -707,7 +709,7 @@ save_timeseries_emprego = PythonOperator(
         'cod_tema': 12,
         'name_tema': 'emprego'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -719,7 +721,7 @@ save_timeseries_estoque_de_capital = PythonOperator(
         'cod_tema': 19,
         'name_tema': 'estoque_de_capital'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -731,7 +733,7 @@ save_timeseries_financeiras = PythonOperator(
         'cod_tema': 39,
         'name_tema': 'financeiras'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -743,7 +745,7 @@ save_timeseries_geografico = PythonOperator(
         'cod_tema': 32,
         'name_tema': 'geografico'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -755,7 +757,7 @@ save_timeseries_governador = PythonOperator(
         'cod_tema': 56,
         'name_tema': 'governador'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -767,7 +769,7 @@ save_timeseries_habitacao = PythonOperator(
         'cod_tema': 31,
         'name_tema': 'habitacao'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -779,7 +781,7 @@ save_timeseries_idhm2000 = PythonOperator(
         'cod_tema': 79,
         'name_tema': 'idhm2000'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -791,7 +793,7 @@ save_timeseries_indicadores_sociais = PythonOperator(
         'cod_tema': 15,
         'name_tema': 'indicadores_sociais'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -803,7 +805,7 @@ save_timeseries_mercado_de_trabalho = PythonOperator(
         'cod_tema': 40,
         'name_tema': 'mercado_de_trabalho'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -815,7 +817,7 @@ save_timeseries_moeda_e_credito = PythonOperator(
         'cod_tema': 3,
         'name_tema': 'moeda_e_credito'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -827,7 +829,7 @@ save_timeseries_percepcao_e_expectativa = PythonOperator(
         'cod_tema': 27,
         'name_tema': 'percepcao_e_expectativa'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -839,7 +841,7 @@ save_timeseries_populacao = PythonOperator(
         'cod_tema': 14,
         'name_tema': 'populacao'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -851,7 +853,7 @@ save_timeseries_precos = PythonOperator(
         'cod_tema': 9,
         'name_tema': 'precos'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -863,7 +865,7 @@ save_timeseries_prefeito = PythonOperator(
         'cod_tema': 57,
         'name_tema': 'prefeito'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -875,7 +877,7 @@ save_timeseries_presidente = PythonOperator(
         'cod_tema': 58,
         'name_tema': 'presidente'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -887,7 +889,7 @@ save_timeseries_producao = PythonOperator(
         'cod_tema': 1,
         'name_tema': 'producao'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -899,7 +901,7 @@ save_timeseries_projecoes = PythonOperator(
         'cod_tema': 16,
         'name_tema': 'projecoes'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -911,7 +913,7 @@ save_timeseries_renda = PythonOperator(
         'cod_tema': 30,
         'name_tema': 'renda'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -923,7 +925,7 @@ save_timeseries_salario_e_renda = PythonOperator(
         'cod_tema': 13,
         'name_tema': 'salario_e_renda'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -935,7 +937,7 @@ save_timeseries_saude = PythonOperator(
         'cod_tema': 41,
         'name_tema': 'saude'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -947,7 +949,7 @@ save_timeseries_senador = PythonOperator(
         'cod_tema': 59,
         'name_tema': 'senador'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -959,7 +961,7 @@ save_timeseries_sinopse_macroeconomica = PythonOperator(
         'cod_tema': 17,
         'name_tema': 'sinopse_macroeconomica'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -971,7 +973,7 @@ save_timeseries_transporte = PythonOperator(
         'cod_tema': 33,
         'name_tema': 'transporte'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -983,7 +985,7 @@ save_timeseries_vendas = PythonOperator(
         'cod_tema': 26,
         'name_tema': 'vendas'
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
@@ -995,7 +997,7 @@ save_timeseries_vereador  = PythonOperator(
         'cod_tema': 60,
         'name_tema': 'vereador '
     },
-    queue = worker_queue,
+    executor_config=executor_config,
     dag = dag
 )
 
