@@ -22,7 +22,7 @@ steps:
     - cp --recursive /drone/src/dags/ipea_data $MOUNT_DIR/ipea_data
   when:
     branch:
-    - dev-kubernetes
+    - master
     event:
       exclude:
         - pull_request
@@ -40,6 +40,6 @@ steps:
     context: /drone/src/docker/ondemand/
   when:
     branch:
-    - dev-kubernetes
+    - master
     event:
       - tag
