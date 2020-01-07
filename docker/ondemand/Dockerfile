@@ -1,4 +1,4 @@
-FROM rzldt.azurecr.io/airzflow:latest
+FROM raizenanalyticsdev.azurecr.io/airflow-base:latest
 
 RUN pip install --user apache-airflow[hive,jdbc]
 
@@ -53,21 +53,7 @@ ENV SPARK_OPTS "--driver-java-options=-Xms1024M --driver-java-options=-Xmx4096M 
 
 RUN pip install pyspark==2.3.1
 RUN pip install findspark
-RUN pip install pyarrow
-
-#memcached
-RUN wget https://www.memcached.org/files/memcached-1.5.13.tar.gz
-RUN ls -lah
-RUN tar -zxvf memcached-1.5.13.tar.gz
-RUN ls -lah
-
-WORKDIR memcached-1.5.13
-RUN ls -lah
-RUN ./configure && make && make test && make install
-
-RUN pip install pymemcache
-
-WORKDIR /home/engineer/
+RUN pip install pyarrow==0.14.1
 
 USER engineer
 WORKDIR /home/engineer/
@@ -78,6 +64,7 @@ RUN pip install --user JPype1==0.6.3
 RUN pip install --user jaydebeapi
 RUN pip install --user joblib
 RUN pip install --user pyIpeaData
+
 RUN pip install --user great_expectations
 
 USER root

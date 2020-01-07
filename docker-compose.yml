@@ -3,13 +3,18 @@ services:
 
   redis:
     image: 'redis:3.2.7'
-    restart: unless-stopped
     command: redis-server --requirepass redis123
     container_name: redis
 
+  memcached:
+    image: memcached
+    restart: unless-stopped
+    ports:
+      - "11211:11211"
+    container_name: memcache
+
   postgres:
     image: 'postgres:9.6'
-    restart: unless-stopped
     environment:
       - POSTGRES_USER=airflow
       - POSTGRES_PASSWORD=airflow
@@ -41,29 +46,8 @@ services:
     volumes:
       - ./dags:/home/engineer/dags:z
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      
+
   scheduler:
-    image: rzldt.azurecr.io/airzflow:latest
-    environment:
-      - POSTGRES_HOST
-      - POSTGRES_PORT
-      - POSTGRES_USER
-      - POSTGRES_PASSWORD
-      - POSTGRES_DB
-      - REDIS_HOST
-      - REDIS_PORT
-      - REDIS_PASSWORD
-      - FERNET_KEY
-      - REMOTE_BASE_LOG_FOLDER
-      - ENVIRONMENT=dev
-      - HOST_DAGS_PATH=./dags
-    command: airflow scheduler
-    restart: unless-stopped
-    volumes:
-      - ./dags:/home/engineer/dags:z
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-  
-  worker:
     image: rzldt.azurecr.io/airzflow:latest
     environment:
       - POSTGRES_HOST
@@ -78,14 +62,38 @@ services:
       - REMOTE_BASE_LOG_FOLDER=./logs
       - ENVIRONMENT=dev
       - HOST_DAGS_PATH=./dags
-      - HOST_LOGS_PATH=./logs
-    command: airflow worker
+    command: airflow scheduler
     restart: unless-stopped
     volumes:
       - ./dags:/home/engineer/dags:z
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./logs:/home/engineer/logs:z
 
+  worker:
+    image: rzldt.azurecr.io/airzflow:latest
+    environment:
+      - POSTGRES_HOST
+      - POSTGRES_PORT
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_DB
+      - REDIS_HOST
+      - REDIS_PORT
+      - REDIS_PASSWORD
+      - FERNET_KEY
+      - ENVIRONMENT=dev
+      - REMOTE_BASE_LOG_FOLDER=./logs
+      - MEMCACHED=True
+      - HOST_DAGS_PATH=./dags
+      - HOST_LOGS_PATH=./logs
+      - MEMCACHE_HOST
+      - MEMCACHE_PORT
+    command: airflow worker
+    restart: unless-stopped
+    volumes:
+      - ./dags:/home/engineer/dags:z      
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./logs:/home/engineer/logs:z
+      
   flower:
     image: rzldt.azurecr.io/airzflow:latest
     environment:
@@ -104,5 +112,3 @@ services:
     restart: unless-stopped
     ports:
       - "127.0.0.1:8082:5555"
-
-

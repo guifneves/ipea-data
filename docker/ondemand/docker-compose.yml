@@ -28,6 +28,8 @@ services:
       - REMOTE_BASE_LOG_FOLDER
       - ENVIRONMENT=prod
       - MEMCACHED=True
+      - MEMCACHE_HOST
+      - MEMCACHE_PORT
     networks:
       - my-network
     command: airflow worker -q ipea-data-worker-queue #(4)

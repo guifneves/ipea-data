@@ -1,95 +1,45 @@
 kind: pipeline
+type: kubernetes
 name: default
 
 steps:
-#- name: integrity_test
-#  image: rzldt.azurecr.io/airzflow_test:latest
-#  commands:
-#    - echo DAGs Integrity Test
-    #- airflow initdb
-    #- cp --recursive /drone/src/dags /home/engineer/dags
-    #- cd /home/engineer
-    #- pytest -v --cov=/drone/src/dags --cov-report=term-missing -W ignore::DeprecationWarning --html=/drone/reports/report.html --self-contained-html /drone/src/dags/tests
-#  volumes:
-#    - name: docker
-#      path: /var/run/docker.sock
-#    - name: report
-#      path: /drone/reports
-#   image: plugins/gh-pages
-#   settings:
-#     username: 
-#       from_secret: GITHUB_USER
-#     password:
-#       from_secret: GITHUB_PASSWORD
-#     pages_directory: docs/build/html
-#   when:
-#     branch:
-#     - master
-#     event:
-#       exclude:
-#       - pull_request
-- name: deploy_dags_qas
-  image: python:3
-  commands:
-    - echo Deploying DAGs 
-    - rm --force --recursive /dags/ipea_data
-    - cp --recursive /drone/src/dags/ipea_data /dags/ipea_data
-  volumes:
-     - name: dags_qa
-       path: /dags
-  when:
-    branch:
-    - dev
-    event:
-      exclude:
-        - pull_request
 - name: deploy_dags_prd
-  image: python:3
+  image: bash
+  privileged: true
+  environment:
+    SHARE_NAME: //raizendevstorage.file.core.windows.net/airflow/dags
+    MOUNT_DIR: dags_dir
+    SHARE_USERNAME: raizendevstorage
+    SHARE_PASSWORD:
+      from_secret: azure-storage-key  
   commands:
-    - echo Deploying DAGs 
-    - rm --force --recursive /dags/ipea_data
-    - cp --recursive /drone/src/dags/ipea_data /dags/ipea_data
-  volumes:
-     - name: dag_prd
-       path: /dags
+    - echo Deploying DAGs
+    - mkdir $MOUNT_DIR
+    - >
+      mount -t cifs $SHARE_NAME $MOUNT_DIR -o 
+      vers=3.0,username=$SHARE_USERNAME,password=$SHARE_PASSWORD,dir_mode=0777,file_mode=0777,serverino
+    - rm -rf $MOUNT_DIR/ipea_data
+    - cp --recursive /drone/src/dags/ipea_data $MOUNT_DIR/ipea_data
   when:
     branch:
     - master
     event:
       exclude:
         - pull_request
-- name: failure_notify
-  image: drillster/drone-email
+        - tag
+        
+- name: publish-image
+  image: banzaicloud/drone-kaniko
   settings:
-    host: 
-      from_secret: DRONE_SMTP_HOST
-    port:
-      from_secret: DRONE_SMTP_PORT
-    username: 
-      from_secret: DRONE_EMAIL
-    password:  
-      from_secret: DRONE_PASSWORD
-    from: 
-      from_secret: DRONE_EMAIL
-    attachment: /drone/reports/report.html
-  volumes:
-    - name: docker
-      path: /var/run/docker.sock
-    - name: report
-      path: /drone/reports
+    registry: raizenanalyticsdev.azurecr.io
+    repo: ipea-data
+    auto_tag: true
+    username: raizenanalyticsdev
+    password:
+      from_secret: azure-registry-key
+    context: /drone/src/docker/ondemand/
   when:
-    status: [ failure ]
-
-volumes:
-- name: dags_qa
-  host:
-    path: /mnt/airflow-qa/dags
-- name: dag_prd
-  host:
-    path: /mnt/airflow-prd/dags
-- name: docker
-  host:
-    path: /var/run/docker.sock
-- name: report
-  host:
-    path: /home/droneafadm/reports
+    branch:
+    - master
+    event:
+      - tag
