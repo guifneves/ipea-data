@@ -1,4 +1,12 @@
-FROM raizenanalyticsdev.azurecr.io/airflow-base:latest
+FROM python:3-stretch as intermediate
+
+ARG GIT_USER
+ARG GIT_PASSWORD
+
+WORKDIR /pip-packages/
+RUN pip download git+https://"$GIT_USER":"$GIT_PASSWORD"@github.com/raizen-analytics-ldt/raizenlib.git@pip-package
+
+FROM raizenanalyticsdev.azurecr.io/airflow-base:1.1.0
 
 RUN pip install --user apache-airflow[hive,jdbc]
 
@@ -70,6 +78,10 @@ RUN pip install --user great_expectations
 USER root
 COPY ./libs/mssql-jdbc-7.2.2.jre8.jar ./libs/mssql-jdbc-7.2.2.jre8.jar
 RUN chown engineer:engineer ./libs/mssql-jdbc-7.2.2.jre8.jar
+
+COPY --from=intermediate /pip-packages/ /pip-packages/
+RUN pip install /pip-packages/* \
+    && rm -r /pip-packages
 
 USER engineer
 WORKDIR /home/engineer/

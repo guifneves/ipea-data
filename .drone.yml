@@ -27,12 +27,20 @@ steps:
       exclude:
         - pull_request
         - tag
-        
+
 - name: publish-image
   image: banzaicloud/drone-kaniko
+  environment:
+    GIT_USER:
+      from_secret: GIT_USER
+    GIT_PASSWORD:
+      from_secret: GIT_PASSWORD
   settings:
     registry: raizenanalyticsdev.azurecr.io
     repo: ipea-data
+    build_args_from_env:
+      - GIT_USER
+      - GIT_PASSWORD
     auto_tag: true
     username: raizenanalyticsdev
     password:
@@ -40,6 +48,6 @@ steps:
     context: /drone/src/docker/ondemand/
   when:
     branch:
-    - master
+    - dev-kubernetes
     event:
       - tag
