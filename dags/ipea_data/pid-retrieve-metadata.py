@@ -12,7 +12,7 @@ dag_id = 'PID-retrieve_ipea_metadata'
 workdir = "ldt_dev/projetos/ipea_data"
 # worker_queue = "ipea-data-worker-queue"
 
-executor_config={ 'KubernetesExecutor' : { 'image' : 'raizenanalyticsdev.azurecr.io/ipea-data:1.0.0' }}
+executor_config={ 'KubernetesExecutor' : { 'image' : 'raizenanalyticsdev.azurecr.io/ipea-data:1.1.0' }}
 
 default_args = {
     'owner': 'Projeto IPEA Data',
